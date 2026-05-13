@@ -1,0 +1,42 @@
+name: Feature request
+description: Improve an existing module
+title: "[feature] <module-name>: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this to propose a change to an existing module. For a brand new module, use the **New module proposal** template instead.
+
+  - type: input
+    id: module
+    attributes:
+      label: Which module?
+      placeholder: live-chat, photo-gallery, ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+    validations:
+      required: true
+
+  - type: dropdown
+    id: breaking
+    attributes:
+      label: Is this a breaking change for existing consumers?
+      options:
+        - "No — backwards compatible"
+        - "Yes — needs a major version bump and migration notes"
+        - "Not sure"
+    validations:
+      required: true

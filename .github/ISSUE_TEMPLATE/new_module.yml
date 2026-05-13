@@ -1,0 +1,78 @@
+name: New module proposal
+description: Propose a new module to add to the library
+title: "[new-module] "
+labels: ["new-module"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this to propose a new module before opening a PR. A short design sketch saves a lot of churn.
+
+  - type: input
+    id: name
+    attributes:
+      label: Proposed name
+      placeholder: kebab-case, e.g. payment-stripe-checkout
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: One-sentence description
+      placeholder: Stripe Checkout integration with webhook handling and session retrieval
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      options:
+        - auth
+        - chat
+        - data
+        - ui
+        - media
+        - notification
+        - infra
+        - other
+    validations:
+      required: true
+
+  - type: textarea
+    id: source
+    attributes:
+      label: Source project
+      description: Where is this code currently working? Link the repo if it's public.
+    validations:
+      required: true
+
+  - type: textarea
+    id: surface
+    attributes:
+      label: Public surface
+      description: Routes, components, library exports, env vars the consumer will see
+      placeholder: |
+        - POST /api/checkout/session — creates a Stripe session
+        - <CheckoutButton /> — wraps Stripe.js
+        - sendReceiptEmail() — server-side helper
+        - STRIPE_SECRET_KEY env var
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies on other modules
+      placeholder: Requires `authentication` for the user check on /api/checkout
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: "All strings in the code are English"
+          required: true
+        - label: "No /home/, secrets, internal hostnames or personal info"
+          required: true
+        - label: "Built on Next.js 14 App Router, TypeScript, Tailwind"
+          required: true

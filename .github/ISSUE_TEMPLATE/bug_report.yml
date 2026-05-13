@@ -1,0 +1,64 @@
+name: Bug report
+description: Something is broken in an existing module
+title: "[bug] <module-name>: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to file a bug. The more specific you can be, the faster it gets fixed.
+
+        For security issues, use a [private security advisory](https://github.com/tjelite1986/modules/security/advisories/new) instead.
+
+  - type: input
+    id: module
+    attributes:
+      label: Which module?
+      placeholder: live-chat, photo-gallery, web-push-vapid, ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      placeholder: After installing photo-gallery, the thumb route 404s for items uploaded before today
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Copy module per its README
+        2. Run the migration
+        3. ...
+    validations:
+      required: true
+
+  - type: input
+    id: next-version
+    attributes:
+      label: Next.js version
+      placeholder: 14.2.15
+
+  - type: input
+    id: node-version
+    attributes:
+      label: Node.js version
+      placeholder: 20.10.0
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything else
+      description: Relevant `module.json` snippet, stack trace, surrounding context
+      render: shell
