@@ -1,0 +1,27 @@
+{
+  "name": "catalog-browser-pages",
+  "version": "0.1.0",
+  "description": "Reference pages for browsing the catalog: home (hero + suggested + new), type listing with category filter, full-text search. Plus Header, Section, EmptyState, CatalogGrid components.",
+  "category": "ui",
+  "framework": { "next": ">=14", "react": ">=18" },
+  "dependencies": {
+    "npm": ["lucide-react@^0.453.0", "clsx@^2.1.1", "next-auth@^4.24.7"],
+    "modules": ["app-catalog-core", "app-card-components", "category-filter", "auth-nextauth"]
+  },
+  "files": [
+    { "from": "components/Header.tsx", "to": "src/components/Header.tsx" },
+    { "from": "components/Section.tsx", "to": "src/components/Section.tsx" },
+    { "from": "components/EmptyState.tsx", "to": "src/components/EmptyState.tsx" },
+    { "from": "components/CatalogGrid.tsx", "to": "src/components/CatalogGrid.tsx" },
+    { "from": "pages/home/page.tsx", "to": "src/app/page.tsx" },
+    { "from": "pages/apps/page.tsx", "to": "src/app/apps/page.tsx" },
+    { "from": "pages/search/page.tsx", "to": "src/app/search/page.tsx" }
+  ],
+  "envVars": [],
+  "postInstall": [
+    "1. These are templates — fork them rather than copying verbatim",
+    "2. Customize <Header brand=\"Your Name\" /> and the desktopNav array for your routes",
+    "3. The /games page is identical to /apps (just listType('games')) — copy and adapt",
+    "4. Replace the search algorithm with FTS5 or Postgres full-text if you have many entries"
+  ]
+}

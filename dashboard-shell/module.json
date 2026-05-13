@@ -1,0 +1,27 @@
+{
+  "name": "dashboard-shell",
+  "version": "0.1.0",
+  "description": "App-shell layout pattern: collapsible sidebar with feature-gated nav items, sticky top bar with search/bell/avatar, mobile drawer. Wrap any page with <DashboardShell> to inherit the chrome.",
+  "category": "ui",
+  "framework": {
+    "next": ">=14",
+    "react": ">=18"
+  },
+  "dependencies": {
+    "npm": [
+      "lucide-react@^0.451"
+    ],
+    "modules": ["authentication"]
+  },
+  "files": [
+    { "from": "components/DashboardShell.tsx", "to": "src/components/DashboardShell.tsx" },
+    { "from": "components/Sidebar.tsx", "to": "src/components/Sidebar.tsx" },
+    { "from": "components/TopBar.tsx", "to": "src/components/TopBar.tsx" }
+  ],
+  "envVars": [],
+  "postInstall": [
+    "1. Edit Sidebar.tsx navItems[] to match your routes",
+    "2. Optional: add feature toggles via a settings module so admins can hide nav items per user",
+    "3. TopBar references NotificationsBell — drop it or install the notification-bell module"
+  ]
+}

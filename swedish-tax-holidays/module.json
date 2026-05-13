@@ -1,0 +1,47 @@
+{
+  "name": "swedish-tax-holidays",
+  "version": "0.1.0",
+  "description": "Swedish-locale helpers for Skatteverket monthly tax-table lookup (2025/2026, columns 29-42), municipality list with tax rates, and public holiday calculation (Easter via Computus, Midsummer, All Saints, half-days).",
+  "category": "data",
+  "framework": { "next": ">=14" },
+  "dependencies": {
+    "npm": [],
+    "modules": []
+  },
+  "files": [
+    { "from": "lib/tax-lookup.ts", "to": "lib/tax-lookup.ts" },
+    { "from": "lib/holidays.ts", "to": "lib/holidays.ts" },
+    { "from": "data/tax-data-2025.json", "to": "lib/tax-data/tax-data-2025.json" },
+    { "from": "data/tax-data-2026.json", "to": "lib/tax-data/tax-data-2026.json" },
+    { "from": "data/municipalities-2026.json", "to": "lib/tax-data/municipalities-2026.json" },
+    { "from": "api/holidays.ts", "to": "app/api/holidays/route.ts", "optional": true },
+    { "from": "api/municipalities.ts", "to": "app/api/municipalities/route.ts", "optional": true }
+  ],
+  "providesContract": {
+    "tax": {
+      "library": "@/lib/tax-lookup",
+      "exports": [
+        "lookupMonthlyTax",
+        "getTableNumber",
+        "getMunicipalityTable",
+        "getMunicipalityList",
+        "getAvailableTableNumbers",
+        "getAvailableYears"
+      ]
+    },
+    "holidays": {
+      "library": "@/lib/holidays",
+      "exports": ["getHolidays", "isRedDay", "isHalfDay", "isDayBeforeRedDay", "Holiday"]
+    },
+    "endpoints": [
+      "GET /api/holidays?year=2026 — all holidays for a year (optional)",
+      "GET /api/municipalities — full municipality list with tax tables (optional)"
+    ]
+  },
+  "postInstall": [
+    "1. The tax JSON files are 320 KB each — they bundle into your build but won't be hot-reloaded; treat them as static reference data",
+    "2. The lib files import the JSON via relative paths (../data/...). Match the layout in module.json `files[]` or rewrite the imports if you use a different structure",
+    "3. New tax year? Add a tax-data-<year>.json + register it in tablesByYear in lib/tax-lookup.ts. Original parse script is in tidsrapport's scripts/parse-tax-tables.ts (parses Skatteverket PDF)",
+    "4. Holidays cover 1500+ — Easter is Computus, Midsummer is the Friday between Jun 19-25, All Saints' is the Saturday between Oct 31-Nov 6"
+  ]
+}

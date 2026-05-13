@@ -1,0 +1,37 @@
+{
+  "name": "admin-metadata-crud",
+  "version": "0.1.0",
+  "description": "Admin editor + API for catalog item metadata (info.md frontmatter) and asset uploads (logo, banner, screenshots). All operations require an admin role.",
+  "category": "data",
+  "framework": { "next": ">=14", "react": ">=18" },
+  "dependencies": {
+    "npm": ["lucide-react@^0.453.0"],
+    "modules": ["app-catalog-core", "auth-nextauth"]
+  },
+  "files": [
+    { "from": "components/AdminEditor.tsx", "to": "src/components/AdminEditor.tsx" },
+    { "from": "api/admin/[type]/[slug]/info/route.ts", "to": "src/app/api/admin/[type]/[slug]/info/route.ts" },
+    { "from": "api/admin/[type]/[slug]/logo/route.ts", "to": "src/app/api/admin/[type]/[slug]/logo/route.ts" },
+    { "from": "api/admin/[type]/[slug]/banner/route.ts", "to": "src/app/api/admin/[type]/[slug]/banner/route.ts" },
+    { "from": "api/admin/[type]/[slug]/screenshot/route.ts", "to": "src/app/api/admin/[type]/[slug]/screenshot/route.ts" },
+    { "from": "api/admin/[type]/[slug]/screenshot/[file]/route.ts", "to": "src/app/api/admin/[type]/[slug]/screenshot/[file]/route.ts" }
+  ],
+  "envVars": [],
+  "providesContract": {
+    "endpoints": [
+      "PUT /api/admin/[type]/[slug]/info — write info.md from form fields",
+      "POST /api/admin/[type]/[slug]/logo — upload logo (PNG/JPG/WebP, max 5 MB)",
+      "POST /api/admin/[type]/[slug]/banner — upload banner (max 10 MB)",
+      "DELETE /api/admin/[type]/[slug]/banner — remove banner",
+      "POST /api/admin/[type]/[slug]/screenshot — add screenshot (max 8 MB)",
+      "DELETE /api/admin/[type]/[slug]/screenshot/[file] — remove a screenshot"
+    ],
+    "components": ["AdminEditor"]
+  },
+  "postInstall": [
+    "1. Copy files",
+    "2. Build an /admin page that lists entries (listAll() from app-catalog-core) and links to /admin/[type]/[slug]",
+    "3. The /admin/[type]/[slug] page should fetch readEntry() and render <AdminEditor entry={entry} />",
+    "4. Make sure auth-nextauth's middleware.ts is in place — admin routes return 401/403 otherwise"
+  ]
+}

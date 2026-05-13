@@ -1,0 +1,27 @@
+{
+  "$schema": "./registry.schema.json",
+  "name": "thomas-templates",
+  "version": "0.1.0",
+  "description": "Reusable code patterns for Next.js projects. Templates are scaffolds — they show a pattern that you adapt to a concrete entity, rather than installing as-is like a module.",
+  "templates": [
+    {
+      "name": "transaction-crud-template",
+      "path": "transaction-crud-template",
+      "description": "Pattern for transactional records sharing a shape: line-items as JSON, total amount, payment method, status enum. Adapt per concrete entity (invoice, sales receipt, pickup order, ...).",
+      "category": "crud",
+      "tags": ["crud", "transactions", "line-items", "drizzle"],
+      "version": "0.1.0",
+      "status": "stable",
+      "orm": "drizzle"
+    },
+    {
+      "name": "background-job-template",
+      "path": "background-job-template",
+      "description": "Fire-and-forget background-job pattern: in-memory Map<string, Job> store, GET/POST API route (GET = state, POST = start), and a polling button component with idle/working/done/error states.",
+      "category": "data",
+      "tags": ["jobs", "background", "polling", "in-memory"],
+      "version": "0.1.0",
+      "status": "stable"
+    }
+  ]
+}

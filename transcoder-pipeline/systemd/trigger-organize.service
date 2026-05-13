@@ -1,0 +1,13 @@
+[Unit]
+Description=Run elite organize scripts on demand (sentinel trigger)
+
+[Service]
+Type=oneshot
+User=elite
+Group=elite
+# Adjust the script directory to where you installed deploy/bin/.
+Environment=ELITE_SCRIPTS=/opt/elite/bin
+ExecStartPre=/bin/rm -f /var/lib/elite-triggers/organize
+ExecStart=/bin/bash -c "${ELITE_SCRIPTS}/elite-organize-shortvideos.py --commit >> /var/log/elite-organize.log 2>&1 ; ${ELITE_SCRIPTS}/elite-organize-shorts18.py --commit >> /var/log/elite-organize.log 2>&1 ; ${ELITE_SCRIPTS}/elite-organize-photos.py --commit >> /var/log/elite-organize.log 2>&1 ; ${ELITE_SCRIPTS}/elite-archive-expired-stories.py --commit >> /var/log/elite-organize.log 2>&1"
+Nice=15
+IOSchedulingClass=idle

@@ -1,0 +1,23 @@
+{
+  "name": "section-tabs",
+  "version": "0.1.0",
+  "description": "Sub-navigation tabs for grouped pages (e.g. /videos shares tabs for All / Clips / TikTok). One <SectionTabs /> component + a small TS module to declare tab sets.",
+  "category": "ui",
+  "framework": {
+    "next": ">=14",
+    "react": ">=18"
+  },
+  "dependencies": {
+    "npm": [],
+    "modules": []
+  },
+  "files": [
+    { "from": "components/SectionTabs.tsx", "to": "src/components/SectionTabs.tsx" },
+    { "from": "lib/sectionTabs.ts", "to": "src/lib/sectionTabs.ts" }
+  ],
+  "envVars": [],
+  "postInstall": [
+    "1. Edit lib/sectionTabs.ts to declare your tab sets",
+    "2. <SectionTabs tabs={videoTabs} /> at the top of each page in the group"
+  ]
+}

@@ -1,0 +1,8 @@
+[Unit]
+Description=Watch elite trigger for manual organize run
+
+[Path]
+PathExists=/var/lib/elite-triggers/organize
+
+[Install]
+WantedBy=multi-user.target

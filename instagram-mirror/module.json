@@ -1,0 +1,40 @@
+{
+  "name": "instagram-mirror",
+  "version": "0.1.0",
+  "description": "Follow public Instagram profiles and mirror their posts locally. Uses yt-dlp first, falls back to gallery-dl for stubborn profiles.",
+  "category": "media",
+  "framework": {
+    "next": ">=14",
+    "react": ">=18"
+  },
+  "dependencies": {
+    "npm": [
+      "better-sqlite3@^9",
+      "lucide-react@^0.451"
+    ],
+    "system": [
+      "yt-dlp",
+      "gallery-dl"
+    ],
+    "modules": ["authentication", "photo-gallery"]
+  },
+  "files": [
+    { "from": "lib/instagram.ts", "to": "src/lib/instagram.ts" },
+    { "from": "lib/cron-sync.sh", "to": "deploy/cron/instagram-sync" },
+    { "from": "components/", "to": "src/app/instagram/" },
+    { "from": "api/", "to": "src/app/api/instagram/" },
+    { "from": "db/schema.sql", "to": "db/migrations/034_instagram_profiles.sql" }
+  ],
+  "envVars": [
+    { "name": "PHOTOS_ROOT", "description": "Host directory where Instagram media is cached per-profile", "required": true, "example": "/store/instagram" },
+    { "name": "IG_COOKIES_PATH", "description": "Optional path to a cookies.txt for accessing private profiles you follow", "required": false },
+    { "name": "SYNC_TOKEN", "description": "Shared secret for the daily sync cron", "required": true }
+  ],
+  "postInstall": [
+    "1. Install yt-dlp AND gallery-dl on the host (or in the container)",
+    "2. Run the DB migration",
+    "3. Mount a host volume at PHOTOS_ROOT",
+    "4. Optional: provide IG_COOKIES_PATH if you follow private accounts (export cookies.txt from your browser)",
+    "5. Add profiles via /instagram/manage, then trigger sync"
+  ]
+}

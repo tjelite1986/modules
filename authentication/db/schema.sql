@@ -1,0 +1,32 @@
+-- Authentication module schema
+-- Users, invite codes, and sessions tables
+
+CREATE TABLE IF NOT EXISTS users (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  username TEXT UNIQUE NOT NULL,
+  email TEXT,
+  password_hash TEXT NOT NULL,
+  is_admin INTEGER DEFAULT 0,
+  avatar TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  last_seen DATETIME
+);
+
+CREATE TABLE IF NOT EXISTS invite_codes (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  code TEXT UNIQUE NOT NULL,
+  created_by INTEGER NOT NULL,
+  used_by INTEGER,
+  used_at DATETIME,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS sessions (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL,
+  jti TEXT NOT NULL UNIQUE,
+  device_info TEXT,
+  ip TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  last_seen DATETIME DEFAULT CURRENT_TIMESTAMP
+);

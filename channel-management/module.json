@@ -1,0 +1,41 @@
+{
+  "name": "channel-management",
+  "version": "0.1.0",
+  "description": "CRUD for channels, categories, and memberships. Banner/icon image uploads. Supports both public channels and DMs (is_dm flag).",
+  "category": "data",
+  "framework": { "next": ">=14", "react": ">=18" },
+  "dependencies": {
+    "npm": ["socket.io@^4", "better-sqlite3@^9.6.0"],
+    "modules": ["authentication"],
+    "optionalModules": ["file-upload-storage"]
+  },
+  "files": [
+    { "from": "lib/channel-socket.js", "to": "src/lib/channel-socket.js" },
+    { "from": "api/channels/route.ts", "to": "src/app/api/channels/route.ts" },
+    { "from": "api/channels/[id]/route.ts", "to": "src/app/api/channels/[id]/route.ts" },
+    { "from": "api/channels/[id]/banner/route.ts", "to": "src/app/api/channels/[id]/banner/route.ts", "optional": true, "requires": ["file-upload-storage"] },
+    { "from": "api/channels/[id]/icon/route.ts", "to": "src/app/api/channels/[id]/icon/route.ts", "optional": true, "requires": ["file-upload-storage"] },
+    { "from": "api/categories/route.ts", "to": "src/app/api/categories/route.ts" },
+    { "from": "api/categories/[id]/route.ts", "to": "src/app/api/categories/[id]/route.ts" },
+    { "from": "db/schema.sql", "to": "db/migrations/004_channels.sql" }
+  ],
+  "envVars": [],
+  "providesContract": {
+    "server": { "library": "@/lib/channel-socket", "exports": ["attachChannelHandlers"] },
+    "events": {
+      "emits": ["channel-created", "channel-updated", "channel-deleted", "category-created", "category-updated", "category-deleted"],
+      "listens": ["create-channel"]
+    },
+    "tables": ["channels", "categories", "channel_members"]
+  },
+  "requiresContract": {
+    "library": "@/lib/db",
+    "tables": ["users"],
+    "globals": ["global._io"]
+  },
+  "postInstall": [
+    "1. Run DB migration: sqlite3 data/app.db < db/migrations/004_channels.sql",
+    "2. In server.js — call attachChannelHandlers(io, db, socket) in io.on('connection')",
+    "3. The banner/icon routes require the file-upload-storage module — install that first if you want images"
+  ]
+}

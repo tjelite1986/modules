@@ -1,0 +1,43 @@
+{
+  "name": "module-name",
+  "version": "0.1.0",
+  "description": "Short description of what this module does",
+  "category": "chat | auth | ui | data | notification | other",
+  "framework": {
+    "next": ">=14",
+    "react": ">=18"
+  },
+  "dependencies": {
+    "npm": [],
+    "modules": []
+  },
+  "devDependencies": {
+    "npm": []
+  },
+  "files": [
+    {
+      "from": "components/Example.tsx",
+      "to": "components/example/Example.tsx"
+    },
+    {
+      "from": "api/example.ts",
+      "to": "app/api/example/route.ts"
+    },
+    {
+      "from": "db/schema.sql",
+      "to": "db/migrations/001_example.sql"
+    }
+  ],
+  "envVars": [
+    {
+      "name": "EXAMPLE_VAR",
+      "description": "What this variable does",
+      "required": true,
+      "example": "value"
+    }
+  ],
+  "postInstall": [
+    "Import the component where you want it",
+    "Run the db migration if one exists"
+  ]
+}

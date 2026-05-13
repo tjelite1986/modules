@@ -1,0 +1,46 @@
+{
+  "name": "biltema-product-lookup",
+  "version": "0.1.0",
+  "description": "Adapter for Biltema's public typeahead API: single-article lookup, full-text search, and random-product sampling. Useful for retail/inventory apps that resell or reference Biltema items.",
+  "category": "other",
+  "framework": { "next": ">=14" },
+  "dependencies": {
+    "npm": ["next-auth@^4.24.0"],
+    "modules": ["auth-nextauth"]
+  },
+  "files": [
+    { "from": "lib/biltema.ts", "to": "lib/biltema.ts" },
+    { "from": "api/lookup.ts", "to": "app/api/biltema/lookup/route.ts" },
+    { "from": "api/search.ts", "to": "app/api/biltema/search/route.ts" },
+    { "from": "api/random.ts", "to": "app/api/biltema/random/route.ts", "optional": true }
+  ],
+  "providesContract": {
+    "library": "@/lib/biltema",
+    "exports": [
+      "stripHtml",
+      "flattenDocuments",
+      "fetchBiltemTerm",
+      "BiltemDoc",
+      "BiltemSearchResult",
+      "BiltemFetchOptions"
+    ],
+    "endpoints": [
+      "GET /api/biltema/lookup?article_number=... — single article (public — no auth)",
+      "GET /api/biltema/search?q=...&take=20 — search (auth required)",
+      "GET /api/biltema/random?count=20 — random sample across categories (auth required, optional)"
+    ]
+  },
+  "externalServices": [
+    {
+      "name": "Biltema typeahead",
+      "url": "https://find.biltema.com/v3/web/typeahead/100/sv",
+      "auth": "none",
+      "rateLimit": "unofficial — no published limits; use Next.js revalidate cache (300s on search, 3600s on lookup)"
+    }
+  ],
+  "postInstall": [
+    "1. The lookup endpoint is public by default (intended for typeahead in line-item forms) — add an auth check if you don't want this",
+    "2. The Biltema API is unofficial — Biltema may block, change, or rate-limit at any time; treat results as best-effort",
+    "3. If you don't need the random endpoint, drop api/random.ts — it issues 4 parallel uncached requests per call"
+  ]
+}

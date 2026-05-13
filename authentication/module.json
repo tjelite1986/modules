@@ -1,0 +1,76 @@
+{
+  "name": "authentication",
+  "version": "0.1.0",
+  "description": "JWT-based login/register with invite codes, admin accounts, and session tracking",
+  "category": "auth",
+  "framework": {
+    "next": ">=14",
+    "react": ">=18"
+  },
+  "dependencies": {
+    "npm": [
+      "jsonwebtoken@^9.0.2",
+      "bcryptjs@^2.4.3",
+      "better-sqlite3@^9.6.0"
+    ],
+    "modules": []
+  },
+  "devDependencies": {
+    "npm": [
+      "@types/jsonwebtoken",
+      "@types/bcryptjs"
+    ]
+  },
+  "files": [
+    {
+      "from": "lib/auth.ts",
+      "to": "src/lib/auth.ts"
+    },
+    {
+      "from": "api/login/route.ts",
+      "to": "src/app/api/auth/login/route.ts"
+    },
+    {
+      "from": "api/register/route.ts",
+      "to": "src/app/api/auth/register/route.ts"
+    },
+    {
+      "from": "pages/login/page.tsx",
+      "to": "src/app/login/page.tsx",
+      "optional": true
+    },
+    {
+      "from": "pages/register/page.tsx",
+      "to": "src/app/register/page.tsx",
+      "optional": true
+    },
+    {
+      "from": "db/schema.sql",
+      "to": "db/migrations/001_auth.sql"
+    }
+  ],
+  "envVars": [
+    {
+      "name": "JWT_SECRET",
+      "description": "Secret used for JWT signing — use at least 32 random characters",
+      "required": true,
+      "example": "your-long-random-string-here"
+    }
+  ],
+  "providesContract": {
+    "library": "@/lib/auth",
+    "exports": ["verifyToken", "verifyAdmin", "signToken", "extractJti"]
+  },
+  "requiresContract": {
+    "library": "@/lib/db",
+    "exports": ["getDb"],
+    "description": "The project must export getDb() that returns a better-sqlite3 Database instance"
+  },
+  "postInstall": [
+    "1. Add JWT_SECRET to .env.local",
+    "2. Create src/lib/db.ts with getDb() if it doesn't exist (see README)",
+    "3. Run db schema: sqlite3 data/app.db < db/migrations/001_auth.sql",
+    "4. Promote first admin: UPDATE users SET is_admin = 1 WHERE username = 'X'",
+    "5. Create the first invite code manually or via the admin panel"
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "name": "repair-receipt-workflow",
+  "version": "0.1.0",
+  "description": "Service/repair receipts with warranty flag, fault description, action notes, technician, and a 4-step status workflow (intake → in_progress → ready → picked_up).",
+  "category": "data",
+  "framework": { "next": ">=14", "react": ">=18" },
+  "orm": "drizzle",
+  "database": { "engine": "sqlite" },
+  "dependencies": {
+    "npm": [
+      "next-auth@^4.24.0",
+      "drizzle-orm@^0.45.0",
+      "better-sqlite3@^12.0.0"
+    ],
+    "modules": ["auth-nextauth"]
+  },
+  "devDependencies": {
+    "npm": ["@types/better-sqlite3"]
+  },
+  "files": [
+    { "from": "db/schema.ts", "to": "lib/db/schema/repair-receipts.ts" },
+    { "from": "db/schema.sql", "to": "db/migrations/repair-receipts.sql", "optional": true },
+    { "from": "lib/repair-receipts.ts", "to": "lib/repair-receipts.ts" },
+    { "from": "api/route.ts", "to": "app/api/repair-receipts/route.ts" }
+  ],
+  "providesContract": {
+    "library": "@/lib/repair-receipts",
+    "exports": ["generateReceiptNumber", "STATUS_TRANSITIONS", "canTransition", "RepairStatus"],
+    "schema": { "library": "@/lib/db/schema/repair-receipts", "exports": ["repairReceipts", "RepairReceipt", "NewRepairReceipt"] },
+    "endpoints": [
+      "GET /api/repair-receipts — list (admin sees all, user sees own)",
+      "POST /api/repair-receipts — create",
+      "PATCH /api/repair-receipts — update (id in body)"
+    ]
+  },
+  "postInstall": [
+    "1. Add `repairReceipts` to your lib/db/schema map",
+    "2. Push the schema: drizzle-kit push (or run db/migrations/repair-receipts.sql)",
+    "3. Customer fields are denormalised — pair with customer-register if you want a normalised customers table",
+    "4. Override generateReceiptNumber() if you need a different numbering format",
+    "5. The STATUS_TRANSITIONS map is enforced only if you call canTransition() in your PATCH handler — extend the route if you want strict validation"
+  ]
+}

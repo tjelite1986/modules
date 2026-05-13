@@ -1,0 +1,12 @@
+[Unit]
+Description=Transcode elite short videos to web-optimized .web.mp4
+After=network.target
+
+[Service]
+Type=oneshot
+# Replace with the unprivileged user/group that owns the media tree.
+User=elite
+Group=elite
+ExecStart=/usr/local/bin/elite-transcode.sh
+Nice=15
+IOSchedulingClass=idle

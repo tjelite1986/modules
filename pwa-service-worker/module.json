@@ -1,0 +1,27 @@
+{
+  "name": "pwa-service-worker",
+  "version": "0.1.0",
+  "description": "Minimal Progressive Web App package: service worker handling 'push' + 'notificationclick' events, manifest scaffolding, Web Share Target receiver. Designed to compose with web-push-vapid.",
+  "category": "ui",
+  "framework": {
+    "next": ">=14",
+    "react": ">=18"
+  },
+  "dependencies": {
+    "npm": [],
+    "modules": []
+  },
+  "files": [
+    { "from": "public/sw.js", "to": "public/sw.js" },
+    { "from": "components/ServiceWorkerRegister.tsx", "to": "src/components/ServiceWorkerRegister.tsx" },
+    { "from": "components/ShareTargetModal.tsx", "to": "src/components/ShareTargetModal.tsx" }
+  ],
+  "envVars": [],
+  "postInstall": [
+    "1. Add <ServiceWorkerRegister /> to your root layout.tsx body",
+    "2. Add a public/manifest.json with name, icons and start_url",
+    "3. Add <link rel='manifest' href='/manifest.json' /> in your root <head>",
+    "4. For Web Share Target: add 'share_target' to manifest.json pointing at /share (the page that mounts ShareTargetModal)",
+    "5. Optionally pair with web-push-vapid — sw.js already handles 'push' events"
+  ]
+}

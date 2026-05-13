@@ -1,0 +1,74 @@
+{
+  "name": "auth-nextauth",
+  "version": "0.1.0",
+  "description": "NextAuth credentials provider with role-based access (user/admin), JWT sessions, bcrypt password hashing. Alternative to the hand-rolled JWT in the `authentication` module.",
+  "category": "auth",
+  "framework": { "next": ">=14", "react": ">=18" },
+  "dependencies": {
+    "npm": [
+      "next-auth@^4.24.7",
+      "bcryptjs@^2.4.3",
+      "better-sqlite3@^11.3.0"
+    ],
+    "modules": []
+  },
+  "devDependencies": {
+    "npm": ["@types/bcryptjs", "@types/better-sqlite3"]
+  },
+  "files": [
+    { "from": "lib/auth.ts", "to": "src/lib/auth.ts" },
+    { "from": "lib/auth-db.ts", "to": "src/lib/auth-db.ts" },
+    { "from": "lib/admin.ts", "to": "src/lib/admin.ts" },
+    { "from": "api/[...nextauth]/route.ts", "to": "src/app/api/auth/[...nextauth]/route.ts" },
+    { "from": "types/next-auth.d.ts", "to": "src/types/next-auth.d.ts" },
+    { "from": "components/Providers.tsx", "to": "src/components/Providers.tsx" },
+    { "from": "pages/login/page.tsx", "to": "src/app/login/page.tsx", "optional": true },
+    { "from": "middleware.ts", "to": "src/middleware.ts", "optional": true },
+    { "from": "db/schema.sql", "to": "db/migrations/001_auth_nextauth.sql" }
+  ],
+  "envVars": [
+    {
+      "name": "NEXTAUTH_SECRET",
+      "description": "Secret used by NextAuth to sign JWTs. Generate with: openssl rand -base64 32",
+      "required": true
+    },
+    {
+      "name": "NEXTAUTH_URL",
+      "description": "Public URL of the app, used for callbacks. E.g. http://localhost:3000",
+      "required": true,
+      "example": "http://localhost:3000"
+    },
+    {
+      "name": "ADMIN_USERNAME",
+      "description": "If set together with ADMIN_PASSWORD, an admin user is auto-seeded on first DB init",
+      "required": false
+    },
+    {
+      "name": "ADMIN_PASSWORD",
+      "description": "Plain-text password for the auto-seeded admin (hashed before storing)",
+      "required": false
+    },
+    {
+      "name": "DATA_DIR",
+      "description": "Where the SQLite file lives. Default: ./data",
+      "required": false
+    }
+  ],
+  "providesContract": {
+    "library": "@/lib/auth",
+    "exports": ["authOptions"],
+    "guards": { "library": "@/lib/admin", "exports": ["requireAdmin"] },
+    "client": { "component": "Providers from @/components/Providers" }
+  },
+  "conflictsWith": [
+    "authentication (uses a different users schema with is_admin instead of role)"
+  ],
+  "postInstall": [
+    "1. Set NEXTAUTH_SECRET, NEXTAUTH_URL in .env.local",
+    "2. Optionally set ADMIN_USERNAME and ADMIN_PASSWORD to auto-seed an admin",
+    "3. Wrap your root layout with <Providers>...</Providers>",
+    "4. (Optional) Drop in middleware.ts to gate everything except /login",
+    "5. The schema is auto-initialized on first DB access — no manual migration needed",
+    "6. To gate API routes: const guard = await requireAdmin(); if (guard) return guard;"
+  ]
+}

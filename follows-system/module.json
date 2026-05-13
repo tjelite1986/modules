@@ -1,0 +1,30 @@
+{
+  "name": "follows-system",
+  "version": "0.1.0",
+  "description": "Follower / following relations between users plus a generic 'follow this profile' table for non-user entities (e.g. photo profiles, clip profiles). Includes view counters.",
+  "category": "data",
+  "framework": {
+    "next": ">=14",
+    "react": ">=18"
+  },
+  "dependencies": {
+    "npm": [
+      "better-sqlite3@^9",
+      "lucide-react@^0.451"
+    ],
+    "modules": ["authentication"]
+  },
+  "files": [
+    { "from": "lib/follows.ts", "to": "src/lib/follows.ts" },
+    { "from": "lib/photoFollows.ts", "to": "src/lib/photoFollows.ts" },
+    { "from": "components/FollowList.tsx", "to": "src/components/FollowList.tsx" },
+    { "from": "db/schema.sql", "to": "db/migrations/008_views_follows.sql" }
+  ],
+  "envVars": [],
+  "postInstall": [
+    "1. Run the DB migration to create user_follows, user_views and photo_profile_follows tables",
+    "2. Use follow(userId, targetUserId) for user→user follows",
+    "3. Use followPhotoProfile(userId, profileSlug) for tracking external profiles (TikTok users, photo collections, etc.)",
+    "4. <FollowList kind='followers' userId={...} /> renders a paginated list with avatars"
+  ]
+}

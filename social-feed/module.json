@@ -1,0 +1,35 @@
+{
+  "name": "social-feed",
+  "version": "0.1.0",
+  "description": "Instagram/Twitter-style feed with posts, likes, and comments. Supports media uploads and sharing chat messages to the feed.",
+  "category": "data",
+  "framework": { "next": ">=14" },
+  "dependencies": {
+    "npm": ["better-sqlite3@^9.6.0"],
+    "modules": ["authentication"],
+    "softModules": ["user-profiles", "live-chat", "file-upload-storage"]
+  },
+  "files": [
+    { "from": "api/feed/route.ts", "to": "src/app/api/feed/route.ts" },
+    { "from": "api/feed/[id]/route.ts", "to": "src/app/api/feed/[id]/route.ts" },
+    { "from": "api/feed/[id]/comments/route.ts", "to": "src/app/api/feed/[id]/comments/route.ts" },
+    { "from": "api/feed/[id]/comments/[commentId]/route.ts", "to": "src/app/api/feed/[id]/comments/[commentId]/route.ts" },
+    { "from": "api/feed/[id]/like/route.ts", "to": "src/app/api/feed/[id]/like/route.ts" },
+    { "from": "db/schema.sql", "to": "db/migrations/010_feed.sql" }
+  ],
+  "envVars": [],
+  "providesContract": {
+    "events": {
+      "emits": ["new-feed-post", "feed-post-deleted", "feed-post-liked", "feed-post-commented", "feed-comment-deleted"]
+    }
+  },
+  "requiresContract": {
+    "tables": ["users (with optional display_name column)"],
+    "globals": ["global._io"]
+  },
+  "postInstall": [
+    "1. sqlite3 data/app.db < db/migrations/010_feed.sql",
+    "2. For share-from-chat — pass the shared_* fields from live-chat messages to POST /api/feed",
+    "3. For media uploads — use the file-upload-storage module and pass the returned media_url to POST /api/feed"
+  ]
+}

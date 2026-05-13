@@ -1,0 +1,68 @@
+{
+  "name": "ytdlp-wrapper",
+  "version": "0.1.0",
+  "description": "Server-side wrapper around yt-dlp for Node.js apps. Fetch metadata, search YouTube, resolve playable URLs from any yt-dlp-supported site, dump flat playlists. Cookie-aware with structured error handling.",
+  "category": "other",
+  "framework": { "next": ">=14" },
+  "dependencies": {
+    "npm": ["next-auth@^4.24.0"],
+    "modules": ["auth-nextauth"]
+  },
+  "files": [
+    { "from": "lib/ytdlp.ts", "to": "lib/ytdlp.ts" },
+    { "from": "api/info.ts", "to": "app/api/ytdlp/info/route.ts", "optional": true },
+    { "from": "api/youtube-search.ts", "to": "app/api/youtube/search/route.ts", "optional": true },
+    { "from": "api/resolve-url.ts", "to": "app/api/resolve-url/route.ts", "optional": true }
+  ],
+  "envVars": [
+    {
+      "name": "YTDLP_PATH",
+      "description": "Absolute path to the yt-dlp binary. Default: /usr/bin/yt-dlp",
+      "required": false,
+      "example": "/usr/local/bin/yt-dlp"
+    },
+    {
+      "name": "YTDLP_COOKIES_PATH",
+      "description": "Absolute path to a Netscape-format cookies.txt. Used for sites that require auth (YouTube age-gated, members-only, etc.). Optional.",
+      "required": false,
+      "example": "/app/data/cookies.txt"
+    }
+  ],
+  "systemDependencies": [
+    {
+      "name": "yt-dlp",
+      "install": "pip install yt-dlp  (or apt-get install yt-dlp on Debian/Ubuntu)",
+      "version": "any recent version"
+    },
+    {
+      "name": "node",
+      "note": "yt-dlp is invoked with --js-runtimes node so a node binary must be on PATH inside the container/host"
+    }
+  ],
+  "providesContract": {
+    "library": "@/lib/ytdlp",
+    "exports": [
+      "fetchYtdlpMeta",
+      "searchYoutube",
+      "resolveYtdlpUrl",
+      "dumpFlatPlaylist",
+      "ytdlpSpawnArgs",
+      "ytdlpBinaryPath",
+      "YtdlpCookieError",
+      "YtdlpMeta",
+      "YtSearchResult",
+      "YtdlpFlatEntry"
+    ],
+    "endpoints": [
+      "POST /api/ytdlp/info — fetch metadata for one URL (admin-only, optional)",
+      "GET /api/youtube/search?q=... — search YouTube via yt-dlp (signed-in, optional)",
+      "GET /api/resolve-url?url=... — resolve to a direct stream URL (signed-in, optional)"
+    ]
+  },
+  "postInstall": [
+    "1. Install yt-dlp on the host/container (must be on PATH or set YTDLP_PATH)",
+    "2. Optionally drop a Netscape cookies.txt at YTDLP_COOKIES_PATH for age-gated/private content",
+    "3. The 3 API routes are convenience wrappers — copy only what you need; lib/ytdlp.ts is the core",
+    "4. To download (not just resolve), use ytdlpSpawnArgs() + ytdlpBinaryPath() with child_process.spawn — see playlist-import-job and background-job-template for patterns"
+  ]
+}

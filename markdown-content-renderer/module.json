@@ -1,0 +1,20 @@
+{
+  "name": "markdown-content-renderer",
+  "version": "0.1.0",
+  "description": "Stateless React Markdown renderer with GitHub-Flavored Markdown (tables, task lists, strikethrough, autolinks).",
+  "category": "ui",
+  "framework": { "next": ">=14", "react": ">=18" },
+  "dependencies": {
+    "npm": ["react-markdown@^9.0.1", "remark-gfm@^4.0.0"],
+    "modules": []
+  },
+  "files": [
+    { "from": "components/Markdown.tsx", "to": "src/components/Markdown.tsx" }
+  ],
+  "envVars": [],
+  "postInstall": [
+    "1. Install deps: npm install react-markdown@^9.0.1 remark-gfm@^4.0.0",
+    "2. Use it: <Markdown>{markdownString}</Markdown>",
+    "3. For user-generated content, also install rehype-sanitize and add it to rehypePlugins"
+  ]
+}

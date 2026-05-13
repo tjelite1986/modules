@@ -1,0 +1,21 @@
+{
+  "name": "version-management",
+  "version": "0.1.0",
+  "description": "VersionList component showing all versions of a catalog entry with per-file architecture labels and direct download links.",
+  "category": "ui",
+  "framework": { "next": ">=14", "react": ">=18" },
+  "dependencies": {
+    "npm": ["lucide-react@^0.453.0"],
+    "modules": ["app-catalog-core"],
+    "softModules": ["file-download-with-logging"]
+  },
+  "files": [
+    { "from": "components/VersionList.tsx", "to": "src/components/VersionList.tsx" }
+  ],
+  "envVars": [],
+  "postInstall": [
+    "1. Copy the component",
+    "2. Make sure /api/download/[type]/[slug]/[version]/[file] exists (file-download-with-logging module) — or change the href to wherever your downloads live",
+    "3. Use it: <VersionList type={entry.type} slug={entry.slug} versions={entry.versions} />"
+  ]
+}

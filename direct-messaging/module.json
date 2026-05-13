@@ -1,0 +1,30 @@
+{
+  "name": "direct-messaging",
+  "version": "0.1.0",
+  "description": "Direct messages between two users. Per-message read receipts, per-channel unread counter.",
+  "category": "chat",
+  "framework": { "next": ">=14" },
+  "dependencies": {
+    "npm": ["socket.io@^4", "better-sqlite3@^9.6.0"],
+    "modules": ["authentication", "channel-management", "live-chat", "presence-system"]
+  },
+  "files": [
+    { "from": "lib/dm-socket.js", "to": "src/lib/dm-socket.js" },
+    { "from": "api/channels/[id]/receipts/route.ts", "to": "src/app/api/channels/[id]/receipts/route.ts" },
+    { "from": "api/unread/route.ts", "to": "src/app/api/unread/route.ts" },
+    { "from": "db/schema.sql", "to": "db/migrations/008_dm.sql" }
+  ],
+  "envVars": [],
+  "providesContract": {
+    "server": { "library": "@/lib/dm-socket", "exports": ["attachDmHandlers"] },
+    "events": {
+      "emits": ["dm-created", "read-receipt"],
+      "listens": ["create-dm", "mark-read"]
+    }
+  },
+  "postInstall": [
+    "1. sqlite3 data/app.db < db/migrations/008_dm.sql",
+    "2. In server.js — attachDmHandlers(io, db, socket, onlineUsers)",
+    "3. Client — emit('create-dm', userId) to start a DM, emit('mark-read', { channelId, messageId }) when the user reads"
+  ]
+}

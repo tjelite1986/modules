@@ -1,0 +1,526 @@
+{
+  "$schema": "./registry.schema.json",
+  "name": "thomas-modules",
+  "version": "0.1.0",
+  "description": "Reusable feature modules for Next.js projects — extracted from elite, elitemess, elitestore, dashboard and tidsrapport",
+  "modules": [
+    {
+      "name": "authentication",
+      "path": "authentication",
+      "description": "JWT-based login/register with invite codes, admin accounts, and session tracking",
+      "category": "auth",
+      "tags": ["jwt", "bcrypt", "sqlite", "invite-codes", "foundation"],
+      "version": "0.1.0",
+      "status": "stable"
+    },
+    {
+      "name": "user-profiles",
+      "path": "user-profiles",
+      "description": "Bio, displayName, avatar upload, password change, session management (remote logout)",
+      "category": "auth",
+      "tags": ["profile", "avatar", "sessions"],
+      "version": "0.1.0",
+      "status": "stable"
+    },
+    {
+      "name": "admin-panel",
+      "path": "admin-panel",
+      "description": "Generate and manage invite codes",
+      "category": "auth",
+      "tags": ["admin", "invite-codes"],
+      "version": "0.1.0",
+      "status": "stable"
+    },
+    {
+      "name": "presence-system",
+      "path": "presence-system",
+      "description": "Online/offline status, last_seen, and custom statuses (online/away/dnd) via Socket.IO",
+      "category": "data",
+      "tags": ["socket.io", "realtime", "presence"],
+      "version": "0.1.0",
+      "status": "stable"
+    },
+    {
+      "name": "channel-management",
+      "path": "channel-management",
+      "description": "CRUD for channels, categories, memberships. Banner/icon images. Supports public channels and DMs.",
+      "category": "data",
+      "tags": ["channels", "categories", "crud"],
+      "version": "0.1.0",
+      "status": "stable"
+    },
+    {
+      "name": "live-chat",
+      "path": "live-chat",
+      "description": "Realtime chat — messages, typing, reactions, edit/delete, reply-to, expiring messages, @mentions",
+      "category": "chat",
+      "tags": ["socket.io", "realtime", "messages", "reactions"],
+      "version": "0.1.0",
+      "status": "stable"
+    },
+    {
+      "name": "direct-messaging",
+      "path": "direct-messaging",
+      "description": "DMs between two users with read receipts and unread counter per channel",
+      "category": "chat",
+      "tags": ["dm", "read-receipts", "unread"],
+      "version": "0.1.0",
+      "status": "stable"
+    },
+    {
+      "name": "bookmarks",
+      "path": "bookmarks",
+      "description": "Save messages for later. Personal bookmarks per user.",
+      "category": "data",
+      "tags": ["bookmarks", "saved"],
+      "version": "0.1.0",
+      "status": "stable"
+    },
+    {
+      "name": "message-pinning",
+      "path": "message-pinning",
+      "description": "Pin important messages in channels (admin-only)",
+      "category": "data",
+      "tags": ["pins", "admin"],
+      "version": "0.1.0",
+      "status": "stable"
+    },
+    {
+      "name": "message-search",
+      "path": "message-search",
+      "description": "Full-text search over messages and filenames (LIKE-based, FTS5-ready)",
+      "category": "data",
+      "tags": ["search", "fulltext"],
+      "version": "0.1.0",
+      "status": "stable"
+    },
+    {
+      "name": "mention-autocomplete",
+      "path": "mention-autocomplete",
+      "description": "@-autocomplete for users and #-channels",
+      "category": "data",
+      "tags": ["mentions", "autocomplete"],
+      "version": "0.1.0",
+      "status": "stable"
+    },
+    {
+      "name": "link-preview",
+      "path": "link-preview",
+      "description": "Stateless URL preview (Open Graph + title tag)",
+      "category": "data",
+      "tags": ["og", "preview", "stateless"],
+      "version": "0.1.0",
+      "status": "stable"
+    },
+    {
+      "name": "social-feed",
+      "path": "social-feed",
+      "description": "Posts, likes, comments. Supports media uploads and sharing chat messages to the feed.",
+      "category": "data",
+      "tags": ["feed", "posts", "likes", "comments"],
+      "version": "0.1.0",
+      "status": "stable"
+    },
+    {
+      "name": "file-upload-storage",
+      "path": "file-upload-storage",
+      "description": "Generic file upload and serving with HTTP Range, HEIC→JPEG conversion, custom folders, and thumbnails",
+      "category": "data",
+      "tags": ["upload", "storage", "heic", "video"],
+      "version": "0.1.0",
+      "status": "stable"
+    },
+    {
+      "name": "auto-share-folder-watcher",
+      "path": "auto-share-folder-watcher",
+      "description": "Watches folders and auto-shares new files to a chat channel as messages",
+      "category": "data",
+      "tags": ["watcher", "automation", "sync"],
+      "version": "0.1.0",
+      "status": "stable"
+    },
+    {
+      "name": "apk-management",
+      "path": "apk-management",
+      "description": "APK versioning, auto-update for Capacitor clients, and smart icon extraction from APK files",
+      "category": "other",
+      "tags": ["android", "capacitor", "apk", "icon-extraction"],
+      "version": "0.1.0",
+      "status": "stable"
+    },
+    {
+      "name": "auth-nextauth",
+      "path": "auth-nextauth",
+      "description": "NextAuth credentials provider with role-based access (user/admin) — alternative to the JWT-based authentication module",
+      "category": "auth",
+      "tags": ["nextauth", "bcrypt", "sqlite", "credentials", "rbac"],
+      "version": "0.1.0",
+      "status": "stable"
+    },
+    {
+      "name": "app-catalog-core",
+      "path": "app-catalog-core",
+      "description": "Filesystem-based catalog for versioned apps/games. Auto-discovers entries from STORE_ROOT/{type}/{slug}/. No DB needed.",
+      "category": "data",
+      "tags": ["catalog", "filesystem", "versioning", "frontmatter"],
+      "version": "0.1.0",
+      "status": "stable"
+    },
+    {
+      "name": "asset-serving-with-auth",
+      "path": "asset-serving-with-auth",
+      "description": "Auth-gated endpoint serving logo/banner/screenshots/markdown from the catalog with path-traversal protection",
+      "category": "data",
+      "tags": ["assets", "static-files", "path-traversal"],
+      "version": "0.1.0",
+      "status": "stable"
+    },
+    {
+      "name": "version-management",
+      "path": "version-management",
+      "description": "VersionList component showing multi-version, multi-architecture file listings with download links",
+      "category": "ui",
+      "tags": ["versions", "downloads", "android-arch"],
+      "version": "0.1.0",
+      "status": "stable"
+    },
+    {
+      "name": "admin-metadata-crud",
+      "path": "admin-metadata-crud",
+      "description": "Admin editor + API for catalog item metadata (info.md frontmatter) and asset uploads (logo/banner/screenshots)",
+      "category": "data",
+      "tags": ["admin", "crud", "frontmatter", "uploads"],
+      "version": "0.1.0",
+      "status": "stable"
+    },
+    {
+      "name": "markdown-content-renderer",
+      "path": "markdown-content-renderer",
+      "description": "Stateless React Markdown renderer with GitHub-Flavored Markdown",
+      "category": "ui",
+      "tags": ["markdown", "gfm", "stateless"],
+      "version": "0.1.0",
+      "status": "stable"
+    },
+    {
+      "name": "app-card-components",
+      "path": "app-card-components",
+      "description": "Card layouts for catalog browsing: grid (AppCard), row (AppRowCard), landscape (AppLandscapeCard), hero (HeroCard), Install button",
+      "category": "ui",
+      "tags": ["cards", "catalog", "play-store-style"],
+      "version": "0.1.0",
+      "status": "stable"
+    },
+    {
+      "name": "category-filter",
+      "path": "category-filter",
+      "description": "Stateless filter pills with horizontal scroll",
+      "category": "ui",
+      "tags": ["filter", "pills", "stateless"],
+      "version": "0.1.0",
+      "status": "stable"
+    },
+    {
+      "name": "file-download-with-logging",
+      "path": "file-download-with-logging",
+      "description": "Authenticated download endpoint that streams catalog files and logs each download in the DB",
+      "category": "data",
+      "tags": ["download", "streaming", "logging"],
+      "version": "0.1.0",
+      "status": "stable"
+    },
+    {
+      "name": "catalog-browser-pages",
+      "path": "catalog-browser-pages",
+      "description": "Reference pages: home (hero + sections), type listing with filter, search. Plus Header/Section/EmptyState/CatalogGrid components.",
+      "category": "ui",
+      "tags": ["pages", "template", "browse", "search"],
+      "version": "0.1.0",
+      "status": "stable"
+    },
+    {
+      "name": "app-detail-page",
+      "path": "app-detail-page",
+      "description": "Detail page template with multi-arch install buttons, screenshot lightbox, markdown body, tags, and version list",
+      "category": "ui",
+      "tags": ["detail", "lightbox", "template"],
+      "version": "0.1.0",
+      "status": "stable"
+    },
+    {
+      "name": "customer-register",
+      "path": "customer-register",
+      "description": "CRUD for customers + flexible lookup (number/phone/SSN with format normalisation) + optional cross-table transaction history aggregator",
+      "category": "data",
+      "tags": ["crud", "customers", "crm", "drizzle"],
+      "version": "0.1.0",
+      "status": "stable",
+      "orm": "drizzle"
+    },
+    {
+      "name": "article-catalog-with-pricing",
+      "path": "article-catalog-with-pricing",
+      "description": "Article (product) CRUD with bundle pricing (X-for-Y) and an effective-price calculator",
+      "category": "data",
+      "tags": ["crud", "articles", "products", "pricing", "drizzle"],
+      "version": "0.1.0",
+      "status": "stable",
+      "orm": "drizzle"
+    },
+    {
+      "name": "repair-receipt-workflow",
+      "path": "repair-receipt-workflow",
+      "description": "Service/repair receipts with warranty, fault description, technician, and a 4-step status workflow (intake → in_progress → ready → picked_up)",
+      "category": "data",
+      "tags": ["crud", "receipts", "service", "workflow", "drizzle"],
+      "version": "0.1.0",
+      "status": "stable",
+      "orm": "drizzle"
+    },
+    {
+      "name": "company-register-with-vat-lookup",
+      "path": "company-register-with-vat-lookup",
+      "description": "B2B company CRUD with internal search and an EU VIES VAT-number lookup (Sweden-specific helpers)",
+      "category": "data",
+      "tags": ["crud", "companies", "b2b", "vat", "vies", "drizzle"],
+      "version": "0.1.0",
+      "status": "stable",
+      "orm": "drizzle"
+    },
+    {
+      "name": "biltema-product-lookup",
+      "path": "biltema-product-lookup",
+      "description": "Adapter for Biltema's public typeahead API: lookup, search, random sampling. Useful for retail/inventory apps that resell or reference Biltema items.",
+      "category": "other",
+      "tags": ["external-api", "biltema", "lookup", "search"],
+      "version": "0.1.0",
+      "status": "stable"
+    },
+    {
+      "name": "ytdlp-wrapper",
+      "path": "ytdlp-wrapper",
+      "description": "Server-side yt-dlp wrapper: metadata fetch, YouTube search, URL resolve, flat-playlist dump, helpers for spawning yt-dlp directly. Cookie-aware with structured errors.",
+      "category": "other",
+      "tags": ["yt-dlp", "youtube", "video", "media", "child-process"],
+      "version": "0.1.0",
+      "status": "stable"
+    },
+    {
+      "name": "media-utils",
+      "path": "media-utils",
+      "description": "Pure utility functions: YouTube URL detection / ID extraction, thumbnail building, duration / view-count formatting, URL classification. Zero dependencies.",
+      "category": "other",
+      "tags": ["media", "youtube", "utils", "stateless"],
+      "version": "0.1.0",
+      "status": "stable"
+    },
+    {
+      "name": "video-player-toolkit",
+      "path": "video-player-toolkit",
+      "description": "YouTube-style HTML5 player toolkit: usePlayerKeyboard hook (space/k/j/l/0-9/F/M/arrows), useVideoResume hook (localStorage position), PlayerOsd overlay, SpeedSelector, ContinueWatching carousel.",
+      "category": "ui",
+      "tags": ["video", "player", "hooks", "keyboard", "resume"],
+      "version": "0.1.0",
+      "status": "stable"
+    },
+    {
+      "name": "pin-content-gate",
+      "path": "pin-content-gate",
+      "description": "Bcrypt PIN gate with session cookie. Restrict access to a section of an app on top of normal auth (age gate, paid tier, dev-only routes). Numeric keypad component, admin set-PIN endpoint, verify endpoint.",
+      "category": "auth",
+      "tags": ["pin", "gate", "bcrypt", "cookie", "age-restriction"],
+      "version": "0.1.0",
+      "status": "stable"
+    },
+    {
+      "name": "playlist-import-job",
+      "path": "playlist-import-job",
+      "description": "Bulk-import every entry of a yt-dlp-supported playlist URL (YouTube, Vimeo) into a local media table. Single transaction, returns per-item counts and errors.",
+      "category": "data",
+      "tags": ["yt-dlp", "playlist", "import", "youtube", "bulk"],
+      "version": "0.1.0",
+      "status": "stable"
+    },
+    {
+      "name": "swedish-tax-holidays",
+      "path": "swedish-tax-holidays",
+      "description": "Swedish-locale helpers: Skatteverket monthly tax-table lookup (2025/2026, columns 29-42), municipality list, public holidays via Computus + Midsummer + All Saints + half-days.",
+      "category": "data",
+      "tags": ["sweden", "tax", "skatteverket", "holidays", "computus", "locale"],
+      "version": "0.1.0",
+      "status": "stable"
+    },
+    {
+      "name": "time-entry-crud",
+      "path": "time-entry-crud",
+      "description": "Generic time-entry table + CRUD route + week/month calendar views with red-day highlighting + Material-style date and 24h clock pickers + multi-break and task-segment editors. Drizzle.",
+      "category": "data",
+      "tags": ["time-tracking", "calendar", "crud", "drizzle", "datepicker", "timepicker"],
+      "version": "0.1.0",
+      "status": "stable",
+      "orm": "drizzle"
+    },
+    {
+      "name": "tabular-pdf-generator",
+      "path": "tabular-pdf-generator",
+      "description": "jsPDF helper for tabular documents (payslip, invoice, manifest, expense report): header rows + column-based body table + summary box + footer disclaimer. Includes a Swedish payslip example.",
+      "category": "other",
+      "tags": ["pdf", "jspdf", "payslip", "invoice", "tabular"],
+      "version": "0.1.0",
+      "status": "stable"
+    },
+    {
+      "name": "claude-vision-image-parser",
+      "path": "claude-vision-image-parser",
+      "description": "Generic Claude Vision wrapper: image + prompt → parsed JSON. Includes a schedule-from-image reference; bring your own prompt for invoices, receipts, timesheets, forms.",
+      "category": "other",
+      "tags": ["claude", "vision", "anthropic", "ocr", "image-to-json"],
+      "version": "0.1.0",
+      "status": "stable"
+    },
+    {
+      "name": "photo-gallery",
+      "path": "photo-gallery",
+      "description": "Google-Photos-style library: timeline, albums, smart albums, map view, auto-trip detection, year-in-review, tag browser, share links, EXIF + geotag, content-hash dedup",
+      "category": "media",
+      "tags": ["gallery", "photos", "albums", "exif", "geotag", "leaflet", "smart-albums"],
+      "version": "0.1.0",
+      "status": "stable"
+    },
+    {
+      "name": "clips-library",
+      "path": "clips-library",
+      "description": "Per-profile short-video library with posters, comments, view/like counters and transcode-status tracking",
+      "category": "media",
+      "tags": ["video", "clips", "library", "comments"],
+      "version": "0.1.0",
+      "status": "stable"
+    },
+    {
+      "name": "tiktok-mirror",
+      "path": "tiktok-mirror",
+      "description": "Self-hosted TikTok mirror with daily metadata polling and lazy video download via yt-dlp",
+      "category": "media",
+      "tags": ["tiktok", "yt-dlp", "mirror", "cron"],
+      "version": "0.1.0",
+      "status": "stable"
+    },
+    {
+      "name": "web-push-vapid",
+      "path": "web-push-vapid",
+      "description": "VAPID-based Web Push notifications with subscription management and server-side send helper",
+      "category": "notification",
+      "tags": ["push", "vapid", "pwa", "notifications"],
+      "version": "0.1.0",
+      "status": "stable"
+    },
+    {
+      "name": "stories-with-ttl",
+      "path": "stories-with-ttl",
+      "description": "Instagram/Snapchat-style ephemeral stories with configurable TTL and on-disk archival when expired",
+      "category": "media",
+      "tags": ["stories", "ttl", "ephemeral", "feed"],
+      "version": "0.1.0",
+      "status": "stable"
+    },
+    {
+      "name": "instagram-mirror",
+      "path": "instagram-mirror",
+      "description": "Self-hosted Instagram mirror. yt-dlp first, gallery-dl fallback, daily auto-poll",
+      "category": "media",
+      "tags": ["instagram", "yt-dlp", "gallery-dl", "mirror"],
+      "version": "0.1.0",
+      "status": "stable"
+    },
+    {
+      "name": "transcoder-pipeline",
+      "path": "transcoder-pipeline",
+      "description": "Host-side automation: ffmpeg+VLC transcoding to .web.mp4, organize-flat-files-into-profiles scripts, expired-story archival, systemd timer + path triggers",
+      "category": "infra",
+      "tags": ["ffmpeg", "vlc", "systemd", "transcode", "host-scripts"],
+      "version": "0.1.0",
+      "status": "stable"
+    },
+    {
+      "name": "notification-bell",
+      "path": "notification-bell",
+      "description": "In-app notification center with bell icon, unread badge, live updates via Socket.IO",
+      "category": "notification",
+      "tags": ["notifications", "bell", "socket.io"],
+      "version": "0.1.0",
+      "status": "stable"
+    },
+    {
+      "name": "follows-system",
+      "path": "follows-system",
+      "description": "User→user follows plus a generic table for following non-user profiles (TikTok handles, photo collections)",
+      "category": "data",
+      "tags": ["follows", "social-graph", "views"],
+      "version": "0.1.0",
+      "status": "stable"
+    },
+    {
+      "name": "dashboard-shell",
+      "path": "dashboard-shell",
+      "description": "Collapsible sidebar + sticky top bar app-shell layout pattern with feature-gated nav items",
+      "category": "ui",
+      "tags": ["layout", "sidebar", "shell", "navigation"],
+      "version": "0.1.0",
+      "status": "stable"
+    },
+    {
+      "name": "pwa-service-worker",
+      "path": "pwa-service-worker",
+      "description": "Minimal PWA package: service worker for push + notificationclick, manifest scaffolding, Web Share Target receiver",
+      "category": "ui",
+      "tags": ["pwa", "service-worker", "share-target", "manifest"],
+      "version": "0.1.0",
+      "status": "stable"
+    },
+    {
+      "name": "adults-pin-gate",
+      "path": "adults-pin-gate",
+      "description": "Per-user 4-digit PIN that gates 18+ areas. Different from pin-content-gate (shared PIN) — this one is per-user, set on first use",
+      "category": "auth",
+      "tags": ["pin", "18plus", "gating", "bcrypt"],
+      "version": "0.1.0",
+      "status": "stable"
+    },
+    {
+      "name": "activity-badges",
+      "path": "activity-badges",
+      "description": "Activity counters per user plus a rule-driven badge engine that grants achievements when thresholds are crossed",
+      "category": "data",
+      "tags": ["badges", "gamification", "achievements", "activity"],
+      "version": "0.1.0",
+      "status": "stable"
+    },
+    {
+      "name": "avatar-banner-upload",
+      "path": "avatar-banner-upload",
+      "description": "Avatar and banner upload with in-browser cropping, content-hash filenames, deterministic gradient fallback",
+      "category": "ui",
+      "tags": ["avatar", "banner", "crop", "upload"],
+      "version": "0.1.0",
+      "status": "stable"
+    },
+    {
+      "name": "section-tabs",
+      "path": "section-tabs",
+      "description": "Pill-style sub-navigation tabs for grouped pages. Auto-active detection from usePathname()",
+      "category": "ui",
+      "tags": ["tabs", "navigation", "sub-nav"],
+      "version": "0.1.0",
+      "status": "stable"
+    },
+    {
+      "name": "privacy-screenshot",
+      "path": "privacy-screenshot",
+      "description": "Floating privacy widget: CSS-blur images/videos/PII + tap-to-blur custom elements, then one-click PNG screenshot via html-to-image with full-page mode and MSE-video/broken-image fallbacks",
+      "category": "ui",
+      "tags": ["screenshot", "privacy", "blur", "html-to-image", "demo"],
+      "version": "0.1.0",
+      "status": "stable"
+    }
+  ]
+}

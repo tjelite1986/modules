@@ -1,0 +1,26 @@
+{
+  "name": "app-card-components",
+  "version": "0.1.0",
+  "description": "Card layouts for catalog browsing: square grid (AppCard), horizontal row (AppRowCard), landscape banner (AppLandscapeCard), big hero (HeroCard), plus the Install button.",
+  "category": "ui",
+  "framework": { "next": ">=14", "react": ">=18" },
+  "dependencies": {
+    "npm": ["lucide-react@^0.453.0"],
+    "modules": ["app-catalog-core"],
+    "softModules": ["asset-serving-with-auth", "file-download-with-logging"]
+  },
+  "files": [
+    { "from": "components/AppCard.tsx", "to": "src/components/AppCard.tsx" },
+    { "from": "components/InstallButton.tsx", "to": "src/components/InstallButton.tsx" }
+  ],
+  "envVars": [],
+  "providesContract": {
+    "components": ["AppCard", "AppRowCard", "AppLandscapeCard", "HeroCard", "AppCardWide", "InstallButton"]
+  },
+  "postInstall": [
+    "1. Copy both files",
+    "2. The detail page paths assume /app/[slug] for type=apps and /game/[slug] for type=games — adjust detailHref() if your routes differ",
+    "3. The asset URLs assume asset-serving-with-auth is installed at /api/asset/...",
+    "4. The Install button assumes file-download-with-logging is at /api/download/..."
+  ]
+}

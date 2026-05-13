@@ -1,0 +1,41 @@
+{
+  "name": "app-catalog-core",
+  "version": "0.1.0",
+  "description": "Filesystem-based catalog for versioned apps/games. Auto-discovers entries from STORE_ROOT/{apps,games}/{slug}/{assets,versions}/. No DB needed for the catalog itself — just create folders.",
+  "category": "data",
+  "framework": { "next": ">=14" },
+  "dependencies": {
+    "npm": ["gray-matter@^4.0.3"],
+    "modules": []
+  },
+  "files": [
+    { "from": "lib/store.ts", "to": "src/lib/store.ts" }
+  ],
+  "envVars": [
+    {
+      "name": "STORE_ROOT",
+      "description": "Absolute path where the catalog folders live. Default: ./store",
+      "required": false,
+      "example": "/var/lib/myapp/store"
+    }
+  ],
+  "providesContract": {
+    "library": "@/lib/store",
+    "exports": [
+      "STORE_ROOT", "TYPES", "ARCH_LABELS",
+      "AppType", "Arch", "AppFile", "AppVersion", "AppMeta", "AppEntry",
+      "isValidSlug", "isValidFileName", "isValidType",
+      "detectArch", "compareVersions",
+      "appDir", "assetsDir", "infoFile",
+      "findLogo", "findBanner",
+      "readEntry", "listType", "listAll",
+      "decodeSlug", "formatBytes"
+    ]
+  },
+  "postInstall": [
+    "1. Set STORE_ROOT in .env.local if you want a custom location",
+    "2. Create the catalog folders: mkdir -p $STORE_ROOT/apps $STORE_ROOT/games",
+    "3. Add entries by creating: $STORE_ROOT/apps/<slug>/assets/info.md + $STORE_ROOT/apps/<slug>/versions/<x.y.z>/<file>.apk",
+    "4. To customize the categories (e.g. only 'plugins'), edit TYPES in store.ts and adjust types accordingly"
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "name": "privacy-screenshot",
+  "version": "0.1.0",
+  "description": "Floating privacy widget for demo screenshots and bug reports: CSS-blur all images/videos + PII, tap-to-blur custom elements, then one-click PNG screenshot (viewport or full page) via html-to-image with extensive fallbacks for broken images and MSE videos.",
+  "category": "ui",
+  "framework": {
+    "next": ">=14",
+    "react": ">=18"
+  },
+  "dependencies": {
+    "npm": [
+      "html-to-image@^1.11",
+      "lucide-react@^0.451"
+    ],
+    "modules": []
+  },
+  "files": [
+    { "from": "components/PrivacyControls.tsx", "to": "src/components/PrivacyControls.tsx" },
+    { "from": "styles/privacy.css", "to": "src/app/privacy.css" },
+    { "from": "api/image-proxy/route.ts", "to": "src/app/api/image-proxy/route.ts" }
+  ],
+  "envVars": [],
+  "postInstall": [
+    "1. Import styles/privacy.css from your globals.css (or paste the rules in)",
+    "2. Mount <PrivacyControls /> once in your DashboardShell or root layout",
+    "3. Tag any PII elements with data-pii (emails, usernames, etc.)",
+    "4. Tag elements that should NEVER blur with data-no-blur (logos, UI chrome)",
+    "5. Tag elements that should be excluded from the screenshot entirely with data-screenshot-hide=\"1\"",
+    "6. The image-proxy route lets the screenshot capture cross-origin images that would otherwise taint the canvas — drop it if you don't need external image capture"
+  ]
+}

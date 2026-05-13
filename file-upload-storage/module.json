@@ -1,0 +1,50 @@
+{
+  "name": "file-upload-storage",
+  "version": "0.1.0",
+  "description": "Generic file upload, storage, and serving. HTTP Range support for large videos. HEIC->JPEG conversion. Custom folders with thumbnails.",
+  "category": "data",
+  "framework": { "next": ">=14" },
+  "dependencies": {
+    "npm": [
+      "better-sqlite3@^9.6.0",
+      "heic-convert@^2.1.0"
+    ],
+    "modules": ["authentication"]
+  },
+  "files": [
+    { "from": "lib/uploadPaths.ts", "to": "src/lib/uploadPaths.ts" },
+    { "from": "lib/heicConvert.js", "to": "src/lib/heicConvert.js" },
+    { "from": "api/upload/route.ts", "to": "src/app/api/upload/route.ts" },
+    { "from": "api/uploads/[filename]/route.ts", "to": "src/app/api/uploads/[filename]/route.ts" },
+    { "from": "api/files/route.ts", "to": "src/app/api/files/route.ts" },
+    { "from": "api/files/upload/route.ts", "to": "src/app/api/files/upload/route.ts" },
+    { "from": "api/folders/route.ts", "to": "src/app/api/folders/route.ts" },
+    { "from": "api/folders/[id]/route.ts", "to": "src/app/api/folders/[id]/route.ts" },
+    { "from": "api/thumbs/route.ts", "to": "src/app/api/thumbs/route.ts" },
+    { "from": "api/thumbs/[filename]/route.ts", "to": "src/app/api/thumbs/[filename]/route.ts" },
+    { "from": "db/schema.sql", "to": "db/migrations/009_files.sql" }
+  ],
+  "envVars": [
+    {
+      "name": "UPLOADS_DIR",
+      "description": "Absolute path where uploaded files are stored. Default: <DATA_DIR>/uploads",
+      "required": false,
+      "example": "/var/lib/myapp/uploads"
+    },
+    {
+      "name": "DATA_DIR",
+      "description": "Absolute path for all app data (used as the base for uploads if UPLOADS_DIR is not set)",
+      "required": false
+    }
+  ],
+  "providesContract": {
+    "library": "@/lib/uploadPaths",
+    "exports": ["getUploadsRoot", "getSubDir", "getUploadPath", "getAvatarsDir", "getChannelAssetsDir"]
+  },
+  "postInstall": [
+    "1. sqlite3 data/app.db < db/migrations/009_files.sql",
+    "2. Create the uploads directory: mkdir -p $UPLOADS_DIR && chmod 777 $UPLOADS_DIR",
+    "3. UPLOADS_DIR must be writable by the Next.js process (in Docker — bind mount or named volume)",
+    "4. heic-convert has C++ deps — in Docker use a multi-stage build"
+  ]
+}

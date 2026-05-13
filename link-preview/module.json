@@ -1,0 +1,16 @@
+{
+  "name": "link-preview",
+  "version": "0.1.0",
+  "description": "GET /api/link-preview?url=X — fetches and parses Open Graph tags. Stateless, no cache, no DB.",
+  "category": "data",
+  "framework": { "next": ">=14" },
+  "dependencies": { "npm": [], "modules": [] },
+  "files": [
+    { "from": "api/link-preview/route.ts", "to": "src/app/api/link-preview/route.ts" }
+  ],
+  "envVars": [],
+  "postInstall": [
+    "Nothing — copy the file and run. Endpoint is public (no auth).",
+    "To require auth, add a verifyToken check at the top of route.ts."
+  ]
+}

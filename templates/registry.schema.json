@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Template Registry",
+  "type": "object",
+  "required": ["name", "version", "templates"],
+  "properties": {
+    "name": { "type": "string" },
+    "version": { "type": "string" },
+    "description": { "type": "string" },
+    "templates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "path", "description", "category"],
+        "properties": {
+          "name": { "type": "string" },
+          "path": { "type": "string", "description": "Relative path to the template folder" },
+          "description": { "type": "string" },
+          "category": {
+            "type": "string",
+            "enum": ["crud", "auth", "ui", "data", "integration", "other"]
+          },
+          "tags": { "type": "array", "items": { "type": "string" } },
+          "version": { "type": "string" },
+          "status": {
+            "type": "string",
+            "enum": ["draft", "stable", "deprecated"]
+          },
+          "orm": {
+            "type": "string",
+            "description": "Optional. Which ORM the template's db scaffolds use. Omit if no DB code is involved.",
+            "enum": ["drizzle", "raw-sqlite", "prisma"]
+          }
+        }
+      }
+    }
+  }
+}

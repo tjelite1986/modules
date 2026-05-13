@@ -1,0 +1,42 @@
+{
+  "name": "pin-content-gate",
+  "version": "0.1.0",
+  "description": "Bcrypt-protected PIN gate using a session cookie. Use to restrict access to a section of your app (adult content, paid tier, internal pages) on top of normal auth. Admin route to set/reset the PIN, user keypad component, verify endpoint.",
+  "category": "auth",
+  "framework": { "next": ">=14", "react": ">=18" },
+  "dependencies": {
+    "npm": [
+      "next-auth@^4.24.0",
+      "bcryptjs@^2.4.0",
+      "better-sqlite3@^12.0.0"
+    ],
+    "modules": ["auth-nextauth"]
+  },
+  "devDependencies": {
+    "npm": ["@types/bcryptjs", "@types/better-sqlite3"]
+  },
+  "files": [
+    { "from": "lib/pin-gate.ts", "to": "lib/pin-gate.ts" },
+    { "from": "db/schema.sql", "to": "db/migrations/pin-gate.sql", "optional": true },
+    { "from": "api/verify-pin.ts", "to": "app/api/gate/verify-pin/route.ts" },
+    { "from": "api/admin-pin.ts", "to": "app/api/admin/gate-pin/route.ts" },
+    { "from": "components/PinGate.tsx", "to": "components/PinGate.tsx" }
+  ],
+  "providesContract": {
+    "library": "@/lib/pin-gate",
+    "exports": ["PIN_GATE_CONFIG"],
+    "endpoints": [
+      "POST /api/gate/verify-pin — set the unlock cookie if PIN matches",
+      "GET  /api/admin/gate-pin — { hasPin: boolean } (admin)",
+      "POST /api/admin/gate-pin — set or replace the PIN (admin)"
+    ],
+    "components": ["PinGate from @/components/PinGate"]
+  },
+  "postInstall": [
+    "1. Make sure you have a `settings(key TEXT PRIMARY KEY, value TEXT NOT NULL)` table — create with db/migrations/pin-gate.sql if not",
+    "2. Adjust PIN_GATE_CONFIG in lib/pin-gate.ts (cookie name, hash key, min length) if you want multiple gates",
+    "3. In your protected page/layout, check the cookie server-side: const cookieStore = cookies(); if (!cookieStore.get(PIN_GATE_CONFIG.cookieName)) return <PinGate verifyEndpoint='/api/gate/verify-pin' />;",
+    "4. Admin sets the PIN via POST /api/admin/gate-pin with body { pin }",
+    "5. Cookie is session-only by default — user re-enters after closing the browser. Add maxAge in verify-pin.ts if you want persistence"
+  ]
+}

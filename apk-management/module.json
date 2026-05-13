@@ -1,0 +1,41 @@
+{
+  "name": "apk-management",
+  "version": "0.1.0",
+  "description": "APK versioning and icon extraction for a sideload distribution page. Auto-extracts ic_launcher.png from APKs, has an icon library for obfuscated APKs, and a version endpoint for auto-update.",
+  "category": "other",
+  "framework": { "next": ">=14" },
+  "dependencies": {
+    "npm": [
+      "adm-zip@^0.5.10"
+    ],
+    "optionalNpm": [
+      "@capacitor/filesystem",
+      "@capacitor-community/file-opener"
+    ],
+    "modules": ["authentication", "file-upload-storage"]
+  },
+  "files": [
+    { "from": "lib/appVersion.ts", "to": "src/lib/appVersion.ts" },
+    { "from": "lib/apkDownload.ts", "to": "src/lib/apkDownload.ts", "optional": true },
+    { "from": "api/version/route.ts", "to": "src/app/api/version/route.ts" },
+    { "from": "api/apk-icon/[filename]/route.ts", "to": "src/app/api/apk-icon/[filename]/route.ts" },
+    { "from": "api/apk-icon/library/route.ts", "to": "src/app/api/apk-icon/library/route.ts" },
+    { "from": "api/apk-icon/library/[filename]/route.ts", "to": "src/app/api/apk-icon/library/[filename]/route.ts" },
+    { "from": "api/apk-icon/upload/route.ts", "to": "src/app/api/apk-icon/upload/route.ts" }
+  ],
+  "envVars": [
+    {
+      "name": "LATEST_APK_VERSION",
+      "description": "Server-side override of APP_VERSION. Set on deploy so the client knows there's an update available.",
+      "required": false,
+      "example": "1.2.3"
+    }
+  ],
+  "postInstall": [
+    "1. Set APP_VERSION in lib/appVersion.ts (same as your Capacitor android build version)",
+    "2. Place APK files under $UPLOADS_DIR/apk/ (uploaded via file-upload-storage)",
+    "3. Icons are extracted automatically on the first request to /api/apk-icon/[filename]",
+    "4. For obfuscated APKs — drop manual icons into $UPLOADS_DIR/icons/ and select via /api/apk-icon/upload",
+    "5. apkDownload.ts is client-side (Capacitor) — omit if you're not building an Android app"
+  ]
+}

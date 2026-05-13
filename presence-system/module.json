@@ -1,0 +1,57 @@
+{
+  "name": "presence-system",
+  "version": "0.1.0",
+  "description": "Realtime online/offline status, last_seen, and customizable statuses (online/away/dnd) via Socket.IO",
+  "category": "data",
+  "framework": {
+    "next": ">=14",
+    "react": ">=18"
+  },
+  "dependencies": {
+    "npm": [
+      "socket.io@^4",
+      "socket.io-client@^4"
+    ],
+    "modules": ["authentication"]
+  },
+  "files": [
+    {
+      "from": "lib/presence-socket.js",
+      "to": "src/lib/presence-socket.js"
+    },
+    {
+      "from": "hooks/usePresence.ts",
+      "to": "src/hooks/usePresence.ts"
+    },
+    {
+      "from": "db/schema.sql",
+      "to": "db/migrations/002_presence.sql"
+    }
+  ],
+  "envVars": [],
+  "providesContract": {
+    "server": {
+      "library": "@/lib/presence-socket",
+      "exports": ["attachPresence", "ALLOWED_STATUSES"]
+    },
+    "client": {
+      "library": "@/hooks/usePresence",
+      "exports": ["usePresence"]
+    },
+    "events": {
+      "emits": ["user-online", "user-offline", "online-users", "user-status-changed"],
+      "listens": ["set-status"]
+    }
+  },
+  "requiresContract": {
+    "library": "@/lib/db",
+    "exports": ["getDb"],
+    "description": "Project must export getDb() — same as the auth module requires",
+    "sharedState": "Needs an `onlineUsers` Map<userId, socketId> shared across all socket modules"
+  },
+  "postInstall": [
+    "1. Run DB migration (ignore 'duplicate column' errors): sqlite3 data/app.db < db/migrations/002_presence.sql",
+    "2. In server.js — call attachPresence(io, db, socket, onlineUsers) inside io.on('connection')",
+    "3. Client — use usePresence(socket) in your chat component"
+  ]
+}

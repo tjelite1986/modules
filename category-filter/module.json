@@ -1,0 +1,19 @@
+{
+  "name": "category-filter",
+  "version": "0.1.0",
+  "description": "Stateless filter pills component with horizontal scroll. Renders 'All' + a button per category.",
+  "category": "ui",
+  "framework": { "next": ">=14", "react": ">=18" },
+  "dependencies": {
+    "npm": ["clsx@^2.1.1"],
+    "modules": []
+  },
+  "files": [
+    { "from": "components/CategoryFilter.tsx", "to": "src/components/CategoryFilter.tsx" }
+  ],
+  "envVars": [],
+  "postInstall": [
+    "1. Install clsx if you don't already have it",
+    "2. Pass categories + active + onChange — fully controlled, no internal state"
+  ]
+}

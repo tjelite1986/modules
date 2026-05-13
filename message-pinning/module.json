@@ -1,0 +1,26 @@
+{
+  "name": "message-pinning",
+  "version": "0.1.0",
+  "description": "Pin messages in channels. Admin-only. Broadcasts message-pinned/unpinned events via Socket.IO.",
+  "category": "data",
+  "framework": { "next": ">=14" },
+  "dependencies": {
+    "npm": ["better-sqlite3@^9.6.0"],
+    "modules": ["authentication", "channel-management", "live-chat"]
+  },
+  "files": [
+    { "from": "api/channels/[id]/pins/route.ts", "to": "src/app/api/channels/[id]/pins/route.ts" },
+    { "from": "db/schema.sql", "to": "db/migrations/007_pins.sql" }
+  ],
+  "envVars": [],
+  "providesContract": {
+    "events": { "emits": ["message-pinned", "message-unpinned"] }
+  },
+  "requiresContract": {
+    "globals": ["global._io"]
+  },
+  "postInstall": [
+    "1. sqlite3 data/app.db < db/migrations/007_pins.sql",
+    "2. Listen for 'message-pinned' / 'message-unpinned' on the client to update UI"
+  ]
+}

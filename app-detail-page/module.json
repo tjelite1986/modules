@@ -1,0 +1,31 @@
+{
+  "name": "app-detail-page",
+  "version": "0.1.0",
+  "description": "Detail page template for a single catalog entry: header with logo + meta + multi-arch install buttons, screenshot lightbox, markdown description, tags, full version list.",
+  "category": "ui",
+  "framework": { "next": ">=14", "react": ">=18" },
+  "dependencies": {
+    "npm": ["lucide-react@^0.453.0"],
+    "modules": [
+      "app-catalog-core",
+      "version-management",
+      "markdown-content-renderer",
+      "catalog-browser-pages"
+    ]
+  },
+  "files": [
+    { "from": "components/AppDetail.tsx", "to": "src/components/AppDetail.tsx" },
+    { "from": "components/Screenshots.tsx", "to": "src/components/Screenshots.tsx" },
+    { "from": "pages/app/[slug]/page.tsx", "to": "src/app/app/[slug]/page.tsx" },
+    { "from": "pages/game/[slug]/page.tsx", "to": "src/app/game/[slug]/page.tsx" }
+  ],
+  "envVars": [],
+  "providesContract": {
+    "components": ["AppDetail", "Screenshots"]
+  },
+  "postInstall": [
+    "1. The route paths (/app/[slug] for type=apps, /game/[slug] for type=games) match the conventions used by app-card-components",
+    "2. The Screenshots component is a self-contained lightbox — Esc/arrow-keys/swipe to navigate, click backdrop to close",
+    "3. AppDetail.pickInstallables groups latest-version files by architecture and shows one Install button per arch"
+  ]
+}

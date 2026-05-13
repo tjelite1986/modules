@@ -1,0 +1,31 @@
+{
+  "name": "notification-bell",
+  "version": "0.1.0",
+  "description": "In-app notification center: bell icon with unread count, dropdown list, mark-as-read, dismiss-all. Server-side notifyUser() helper emits over Socket.IO for live badges.",
+  "category": "notification",
+  "framework": {
+    "next": ">=14",
+    "react": ">=18"
+  },
+  "dependencies": {
+    "npm": [
+      "better-sqlite3@^9",
+      "lucide-react@^0.451",
+      "socket.io-client@^4"
+    ],
+    "modules": ["authentication"]
+  },
+  "files": [
+    { "from": "lib/notifications.ts", "to": "src/lib/notifications.ts" },
+    { "from": "components/NotificationsBell.tsx", "to": "src/components/NotificationsBell.tsx" },
+    { "from": "api/", "to": "src/app/api/notifications/" },
+    { "from": "db/schema.sql", "to": "db/migrations/007_notifications.sql" }
+  ],
+  "envVars": [],
+  "postInstall": [
+    "1. Run the DB migration",
+    "2. Mount <NotificationsBell /> in your top bar",
+    "3. Server-side, call notifyUser(userId, {type, ...}) to push a notification — it writes the DB row and emits 'notification' on the user's socket room",
+    "4. Optional: integrate with web-push-vapid so notifications also reach offline users"
+  ]
+}

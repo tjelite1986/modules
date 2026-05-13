@@ -1,0 +1,32 @@
+{
+  "name": "tabular-pdf-generator",
+  "version": "0.1.0",
+  "description": "Generic jsPDF helper for tabular documents (payslip, invoice, manifest, expense report). Header rows + column-based body table + summary box + footer disclaimer. Includes a Swedish payslip example.",
+  "category": "other",
+  "framework": { "next": ">=14" },
+  "dependencies": {
+    "npm": ["jspdf@^2.5.0"],
+    "modules": []
+  },
+  "files": [
+    { "from": "lib/pdf-generator.ts", "to": "lib/pdf-generator.ts" },
+    { "from": "lib/example-payslip.ts", "to": "lib/example-payslip.ts", "optional": true }
+  ],
+  "providesContract": {
+    "library": "@/lib/pdf-generator",
+    "exports": [
+      "generateTabularPdf",
+      "formatPdfNumber",
+      "TabularPdfOptions",
+      "HeaderRow",
+      "BodyRow",
+      "SummaryRow"
+    ]
+  },
+  "postInstall": [
+    "1. Install jsPDF: npm install jspdf",
+    "2. Import generateTabularPdf and pass an options object (see lib/example-payslip.ts for a worked example)",
+    "3. doc.save('filename.pdf') to download, or doc.output('blob') for upload",
+    "4. Adjust column offsets (mm from left margin) to fit your column widths — defaults are tuned for A4 portrait"
+  ]
+}

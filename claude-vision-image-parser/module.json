@@ -1,0 +1,43 @@
+{
+  "name": "claude-vision-image-parser",
+  "version": "0.1.0",
+  "description": "Generic Claude Vision wrapper: take an image (multipart upload or Buffer) + a prompt, get back parsed JSON. Includes a schedule-import implementation as a reference; bring your own prompt for invoices, receipts, timesheets, forms, etc.",
+  "category": "other",
+  "framework": { "next": ">=14" },
+  "dependencies": {
+    "npm": ["next-auth@^4.24.0"],
+    "modules": ["auth-nextauth"]
+  },
+  "files": [
+    { "from": "lib/parse-image.ts", "to": "lib/parse-image.ts" },
+    { "from": "api/schedule-import.ts", "to": "app/api/schedule-import/route.ts", "optional": true }
+  ],
+  "envVars": [
+    {
+      "name": "ANTHROPIC_API_KEY",
+      "description": "Your Anthropic API key. Get one at https://console.anthropic.com/.",
+      "required": true,
+      "example": "sk-ant-api03-..."
+    }
+  ],
+  "providesContract": {
+    "library": "@/lib/parse-image",
+    "exports": [
+      "parseImageWithClaude",
+      "buildSchedulePrompt",
+      "ClaudeVisionError",
+      "SupportedMediaType",
+      "ParseImageOptions"
+    ],
+    "endpoints": [
+      "POST /api/schedule-import — FormData {image, year?, month?} → {shifts: [{date, startTime, endTime}]} (reference implementation, optional)"
+    ]
+  },
+  "postInstall": [
+    "1. Set ANTHROPIC_API_KEY in .env.local",
+    "2. parseImageWithClaude is the core helper — pass a Buffer/base64, the media type, and your prompt",
+    "3. Tell Claude to return ONLY JSON in your prompt — the helper strips ```json fences but won't recover from prose around the JSON",
+    "4. The reference schedule route uses claude-haiku-4-5 (cheapest); bump to Sonnet/Opus for harder tables. Pass `model` in opts.",
+    "5. Defaults: 2048 max tokens, no streaming. Override via `opts` if you need more."
+  ]
+}

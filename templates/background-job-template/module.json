@@ -1,0 +1,46 @@
+{
+  "name": "background-job-template",
+  "version": "0.1.0",
+  "description": "Pattern for fire-and-forget background jobs in a single-instance Next.js app: in-memory job store, GET/POST API route, and a polling button component that renders four states (idle/working/done/error). Replace placeholders to fit your concrete job kind.",
+  "category": "data",
+  "framework": { "next": ">=14", "react": ">=18" },
+  "placeholders": {
+    "ENTITY": "PascalCase singular for the job kind (e.g. Download, ImportJob, Transcode)",
+    "entity": "camelCase singular (e.g. download, importJob, transcode)",
+    "entities": "plural lowercase / kebab-case (e.g. downloads, import-jobs, transcodes)"
+  },
+  "dependencies": {
+    "npm": ["next-auth@^4.24.0"],
+    "modules": ["auth-nextauth"]
+  },
+  "files": [
+    { "from": "lib/job-store.ts", "to": "lib/{{entity}}-store.ts" },
+    { "from": "api/route.ts", "to": "app/api/{{entities}}/[id]/route.ts" },
+    { "from": "components/JobButton.tsx", "to": "components/{{ENTITY}}Button.tsx" }
+  ],
+  "providesContract": {
+    "library": "@/lib/{{entity}}-store",
+    "exports": [
+      "JobStatus",
+      "{{ENTITY}}Job",
+      "get{{ENTITY}}Job",
+      "set{{ENTITY}}Job",
+      "delete{{ENTITY}}Job",
+      "gc{{ENTITY}}Jobs",
+      "is{{ENTITY}}Active"
+    ],
+    "endpoints": [
+      "GET  /api/{{entities}}/<id> — current job state, or { status: 'idle' }",
+      "POST /api/{{entities}}/<id> — start a new job, returns { status: 'started' }"
+    ],
+    "components": ["{{ENTITY}}Button from @/components/{{ENTITY}}Button"]
+  },
+  "postInstall": [
+    "1. Pick a concrete job kind (Download / ImportJob / Transcode / ...)",
+    "2. find . -type f \\( -name '*.ts' -o -name '*.tsx' \\) -exec sed -i \\\\\\n  -e 's/{{ENTITY}}/Download/g' \\\\\\n  -e 's/{{entity}}/download/g' \\\\\\n  -e 's/{{entities}}/downloads/g' {} +",
+    "3. Replace the body of the run<Entity>(id, req) function in the API route with your actual long-running work — call set<Entity>Job(id, { status: 'running', progress: ... }) with updates",
+    "4. Use the button: <DownloadButton jobId={mediaId} /> — it polls /api/downloads/<id> every 2s until done or error",
+    "5. The store is in-memory; if you scale beyond one Node.js process, swap lib/<entity>-store.ts for Redis / DB persistence",
+    "6. Optionally call gc<Entity>Jobs() periodically to drop terminal jobs older than 1 hour"
+  ]
+}

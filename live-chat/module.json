@@ -1,0 +1,77 @@
+{
+  "name": "live-chat",
+  "version": "0.1.0",
+  "description": "Realtime chat over Socket.IO — messages, typing indicators, emoji reactions, edit, delete, reply-to, expiring messages, and @mentions",
+  "category": "chat",
+  "framework": {
+    "next": ">=14",
+    "react": ">=18"
+  },
+  "dependencies": {
+    "npm": [
+      "socket.io@^4",
+      "socket.io-client@^4",
+      "jsonwebtoken@^9.0.2"
+    ],
+    "modules": ["authentication", "presence-system"]
+  },
+  "files": [
+    {
+      "from": "lib/chat-socket.js",
+      "to": "src/lib/chat-socket.js"
+    },
+    {
+      "from": "lib/types.ts",
+      "to": "src/lib/chat-types.ts"
+    },
+    {
+      "from": "hooks/useChat.ts",
+      "to": "src/hooks/useChat.ts"
+    },
+    {
+      "from": "api/messages/list/route.ts",
+      "to": "src/app/api/channels/[id]/messages/route.ts"
+    },
+    {
+      "from": "api/messages/[id]/route.ts",
+      "to": "src/app/api/messages/[id]/route.ts"
+    },
+    {
+      "from": "db/schema.sql",
+      "to": "db/migrations/003_chat.sql"
+    }
+  ],
+  "envVars": [],
+  "providesContract": {
+    "server": {
+      "library": "@/lib/chat-socket",
+      "exports": ["attachChatHandlers", "startExpiredMessagesCleanup", "getReactions"]
+    },
+    "client": {
+      "library": "@/hooks/useChat",
+      "exports": ["useChat"]
+    },
+    "types": {
+      "library": "@/lib/chat-types",
+      "exports": ["Message", "TypingUser", "SendMessagePayload"]
+    },
+    "events": {
+      "emits": ["new-message", "typing", "stopped-typing", "reaction-update", "mention", "message-edited", "message-deleted"],
+      "listens": ["join-channel", "leave-channel", "send-message", "typing-start", "typing-stop", "add-reaction", "remove-reaction"]
+    }
+  },
+  "requiresContract": {
+    "library": "@/lib/db",
+    "exports": ["getDb"],
+    "tables": ["users", "channels"],
+    "globals": ["global._io (for REST broadcast on edit/delete)"]
+  },
+  "postInstall": [
+    "1. Run DB migration: sqlite3 data/app.db < db/migrations/003_chat.sql",
+    "2. Make sure a channels table exists (or install the channel-management module later)",
+    "3. In server.js — call attachChatHandlers(io, db, socket, onlineUsers) in io.on('connection') AFTER attachPresence",
+    "4. In server.js — call startExpiredMessagesCleanup(db) once after setup",
+    "5. In server.js — set global._io = io so REST routes (PATCH/DELETE) can broadcast",
+    "6. Client — use useChat(socket, { channelId }) in your chat component"
+  ]
+}

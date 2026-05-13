@@ -1,0 +1,18 @@
+{
+  "name": "message-search",
+  "version": "0.1.0",
+  "description": "Search messages and filenames across all channels the user has access to. Limit 40 hits.",
+  "category": "data",
+  "framework": { "next": ">=14" },
+  "dependencies": {
+    "npm": ["better-sqlite3@^9.6.0"],
+    "modules": ["authentication", "channel-management", "live-chat"]
+  },
+  "files": [
+    { "from": "api/search/route.ts", "to": "src/app/api/search/route.ts" }
+  ],
+  "envVars": [],
+  "postInstall": [
+    "Nothing — endpoint ready to use. To upgrade to FTS5, create a virtual table and adjust the WHERE clause."
+  ]
+}

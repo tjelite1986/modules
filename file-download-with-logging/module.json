@@ -1,0 +1,33 @@
+{
+  "name": "file-download-with-logging",
+  "version": "0.1.0",
+  "description": "Authenticated download endpoint that streams catalog files and records every download in the DB. Path-traversal protection. Sets correct MIME types and RFC-5987 Content-Disposition for non-ASCII filenames.",
+  "category": "data",
+  "framework": { "next": ">=14" },
+  "dependencies": {
+    "npm": ["next-auth@^4.24.7", "better-sqlite3@^11.3.0"],
+    "modules": ["app-catalog-core", "auth-nextauth"]
+  },
+  "files": [
+    { "from": "lib/downloads.ts", "to": "src/lib/downloads.ts" },
+    { "from": "api/download/[type]/[slug]/[version]/[file]/route.ts", "to": "src/app/api/download/[type]/[slug]/[version]/[file]/route.ts" },
+    { "from": "db/schema.sql", "to": "db/migrations/002_downloads.sql" }
+  ],
+  "envVars": [
+    {
+      "name": "DATA_DIR",
+      "description": "Where the SQLite file lives. Default: ./data",
+      "required": false
+    }
+  ],
+  "providesContract": {
+    "library": "@/lib/downloads",
+    "exports": ["recordDownload", "listRecentDownloads", "getDownloadsDb"],
+    "endpoints": ["GET /api/download/[type]/[slug]/[version]/[file]"]
+  },
+  "postInstall": [
+    "1. The downloads schema auto-initializes on first call to recordDownload()",
+    "2. Run db/migrations/002_downloads.sql manually if you prefer explicit migrations",
+    "3. To make downloads public, remove the getServerSession check at the top of route.ts"
+  ]
+}

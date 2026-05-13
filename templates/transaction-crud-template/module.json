@@ -1,0 +1,56 @@
+{
+  "name": "transaction-crud-template",
+  "version": "0.1.0",
+  "description": "Pattern for transactional records that share a common shape: line items as JSON, total amount, payment method, status enum. Adapt per concrete entity (invoice, sales receipt, pickup order, ...).",
+  "category": "crud",
+  "framework": { "next": ">=14", "react": ">=18" },
+  "orm": "drizzle",
+  "database": { "engine": "sqlite" },
+  "placeholders": {
+    "ENTITY": "PascalCase singular (e.g. Invoice, SalesReceipt, PickupOrder)",
+    "entity": "camelCase singular (e.g. invoice, salesReceipt, pickupOrder)",
+    "entities": "plural lowercase / snake_case (e.g. invoices, sales_receipts, pickup_orders)",
+    "StatusEnum": "TS array of status strings (e.g. [\"unpaid\", \"paid\", \"overdue\"])",
+    "defaultStatus": "default status as a quoted string (e.g. \"unpaid\")"
+  },
+  "dependencies": {
+    "npm": [
+      "next-auth@^4.24.0",
+      "drizzle-orm@^0.45.0",
+      "better-sqlite3@^12.0.0",
+      "lucide-react@^0.400.0"
+    ],
+    "modules": ["auth-nextauth"],
+    "modulesOptional": ["article-catalog-with-pricing"]
+  },
+  "files": [
+    { "from": "db/schema.ts", "to": "lib/db/schema/{{entities}}.ts" },
+    { "from": "lib/line-items.ts", "to": "lib/line-items.ts", "shared": true },
+    { "from": "components/LineItemsForm.tsx", "to": "components/LineItemsForm.tsx", "shared": true },
+    { "from": "api/route.ts", "to": "app/api/{{entities}}/route.ts" }
+  ],
+  "providesContract": {
+    "library": "@/lib/line-items",
+    "exports": [
+      "LineItem",
+      "LineItemDraft",
+      "newLineItem",
+      "parseLineItems",
+      "calculateDraftTotal",
+      "formatCurrency"
+    ],
+    "endpoints": [
+      "GET /api/{{entities}} — list (admin sees all, user sees own)",
+      "POST /api/{{entities}} — create (computes totalAmount from items)",
+      "PATCH /api/{{entities}} — update",
+      "DELETE /api/{{entities}}?id=... — delete (admin only)"
+    ]
+  },
+  "postInstall": [
+    "1. Decide your concrete entity (Invoice / SalesReceipt / PickupOrder / Order / ...)",
+    "2. Pick a status enum and default for it",
+    "3. find . -type f \\( -name '*.ts' -o -name '*.tsx' \\) -exec sed -i \\\\\\n  -e 's/{{ENTITY}}/Invoice/g' \\\\\\n  -e 's/{{entity}}/invoice/g' \\\\\\n  -e 's/{{entities}}/invoices/g' \\\\\\n  -e 's/{{StatusEnum}}/[\"unpaid\", \"paid\", \"overdue\"]/g' \\\\\\n  -e 's/{{defaultStatus}}/\"unpaid\"/g' {} +",
+    "4. Files marked `shared: true` (line-items.ts, LineItemsForm.tsx) only need to be copied once — they're entity-agnostic",
+    "5. If you want autocomplete from a local article catalog, install article-catalog-with-pricing and wire onLookup to GET /api/articles/lookup"
+  ]
+}

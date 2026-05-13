@@ -1,0 +1,45 @@
+{
+  "name": "article-catalog-with-pricing",
+  "version": "0.1.0",
+  "description": "Article (product) CRUD with bulk pricing — supports 'X for Y' bundle deals via bundleQuantity/bundlePrice columns and a calculator that returns the effective per-unit price for any quantity.",
+  "category": "data",
+  "framework": { "next": ">=14", "react": ">=18" },
+  "orm": "drizzle",
+  "database": { "engine": "sqlite" },
+  "dependencies": {
+    "npm": [
+      "next-auth@^4.24.0",
+      "drizzle-orm@^0.45.0",
+      "better-sqlite3@^12.0.0"
+    ],
+    "modules": ["auth-nextauth"]
+  },
+  "devDependencies": {
+    "npm": ["@types/better-sqlite3"]
+  },
+  "files": [
+    { "from": "db/schema.ts", "to": "lib/db/schema/articles.ts" },
+    { "from": "db/schema.sql", "to": "db/migrations/articles.sql", "optional": true },
+    { "from": "lib/pricing.ts", "to": "lib/pricing.ts" },
+    { "from": "api/route.ts", "to": "app/api/articles/route.ts" },
+    { "from": "api/lookup.ts", "to": "app/api/articles/lookup/route.ts" }
+  ],
+  "providesContract": {
+    "library": "@/lib/pricing",
+    "exports": ["calculateEffectivePrice", "calculateLineTotal"],
+    "schema": { "library": "@/lib/db/schema/articles", "exports": ["articles", "Article", "NewArticle"] },
+    "endpoints": [
+      "GET /api/articles?q=... — list, optional fuzzy search",
+      "POST /api/articles — create",
+      "PATCH /api/articles — update (id in body)",
+      "DELETE /api/articles?id=... — delete",
+      "GET /api/articles/lookup?article_number=... — single article (for autocomplete in line-item forms)"
+    ]
+  },
+  "postInstall": [
+    "1. Add `articles` to the schema map exported by lib/db/schema",
+    "2. Push the schema: drizzle-kit push (or run db/migrations/articles.sql manually)",
+    "3. Use lookup endpoint from any line-item form (see transaction-crud-template)",
+    "4. The bundle-pricing model assumes one tier; for multi-tier deals replace pricing.ts"
+  ]
+}

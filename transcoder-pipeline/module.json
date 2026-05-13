@@ -1,0 +1,39 @@
+{
+  "name": "transcoder-pipeline",
+  "version": "0.1.0",
+  "description": "Host-side automation for media libraries: transcode originals to web-optimised .web.mp4 (ffmpeg + VLC fallback), organise flat downloads into per-profile folders, archive expired stories.",
+  "category": "infra",
+  "dependencies": {
+    "system": [
+      "ffmpeg",
+      "vlc (for cvlc fallback transcoding)",
+      "python3"
+    ],
+    "modules": []
+  },
+  "files": [
+    { "from": "bin/transcode.sh", "to": "/usr/local/bin/elite-transcode.sh" },
+    { "from": "bin/organize-shortvideos.py", "to": "/opt/elite/bin/organize-shortvideos.py" },
+    { "from": "bin/organize-shorts18.py", "to": "/opt/elite/bin/organize-shorts18.py" },
+    { "from": "bin/organize-photos.py", "to": "/opt/elite/bin/organize-photos.py" },
+    { "from": "bin/archive-expired-stories.py", "to": "/opt/elite/bin/archive-expired-stories.py" },
+    { "from": "systemd/transcode.service", "to": "/etc/systemd/system/elite-transcode.service" },
+    { "from": "systemd/transcode.timer", "to": "/etc/systemd/system/elite-transcode.timer" },
+    { "from": "systemd/trigger-transcode.path", "to": "/etc/systemd/system/elite-trigger-transcode.path" },
+    { "from": "systemd/trigger-transcode.service", "to": "/etc/systemd/system/elite-trigger-transcode.service" },
+    { "from": "systemd/trigger-organize.path", "to": "/etc/systemd/system/elite-trigger-organize.path" },
+    { "from": "systemd/trigger-organize.service", "to": "/etc/systemd/system/elite-trigger-organize.service" }
+  ],
+  "envVars": [
+    { "name": "ELITE_STORE_ROOT", "description": "Root path under which shortvideos/, shorts18/ and tiktok/ live", "required": true, "example": "/mnt/storage/elite" }
+  ],
+  "postInstall": [
+    "1. Install ffmpeg, vlc and python3 on the host",
+    "2. Create the service user/group used in the systemd units (default: elite)",
+    "3. Install scripts: sudo install -m 0755 bin/transcode.sh /usr/local/bin/",
+    "4. Install python scripts: sudo install -m 0755 bin/*.py /opt/elite/bin/",
+    "5. Install unit files: sudo cp systemd/* /etc/systemd/system/ && sudo systemctl daemon-reload",
+    "6. Enable timers + path watchers: sudo systemctl enable --now elite-transcode.timer elite-trigger-*.path",
+    "7. Create the trigger dir: sudo install -d -o elite -g elite /var/lib/elite-triggers"
+  ]
+}

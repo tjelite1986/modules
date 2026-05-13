@@ -1,0 +1,75 @@
+{
+  "name": "time-entry-crud",
+  "version": "0.1.0",
+  "description": "Generic time-entry table + CRUD route + week/month calendar views with red-day highlighting + Material-style date and 24h clock pickers + multi-break and task-segment editors. Drizzle + NextAuth.",
+  "category": "data",
+  "framework": { "next": ">=14", "react": ">=18" },
+  "orm": "drizzle",
+  "database": { "engine": "sqlite" },
+  "dependencies": {
+    "npm": [
+      "next-auth@^4.24.0",
+      "drizzle-orm@^0.45.0",
+      "better-sqlite3@^12.0.0"
+    ],
+    "modules": ["auth-nextauth"],
+    "modulesOptional": ["swedish-tax-holidays"]
+  },
+  "devDependencies": {
+    "npm": ["@types/better-sqlite3"]
+  },
+  "files": [
+    { "from": "db/schema.ts", "to": "lib/db/schema/time-entries.ts" },
+    { "from": "db/schema.sql", "to": "db/migrations/time-entries.sql", "optional": true },
+    { "from": "lib/break-periods.ts", "to": "lib/break-periods.ts" },
+    { "from": "lib/task-segments.ts", "to": "lib/task-segments.ts" },
+    { "from": "lib/time-utils.ts", "to": "lib/time-utils.ts" },
+    { "from": "api/route.ts", "to": "app/api/time-entries/route.ts" },
+    { "from": "components/DatePicker.tsx", "to": "components/DatePicker.tsx" },
+    { "from": "components/TimePicker.tsx", "to": "components/TimePicker.tsx" },
+    { "from": "components/TaskSegmentEditor.tsx", "to": "components/TaskSegmentEditor.tsx" },
+    { "from": "components/calendar/CalendarMonthView.tsx", "to": "components/calendar/CalendarMonthView.tsx" },
+    { "from": "components/calendar/CalendarWeekView.tsx", "to": "components/calendar/CalendarWeekView.tsx" },
+    { "from": "components/calendar/CalendarViewToggle.tsx", "to": "components/calendar/CalendarViewToggle.tsx" },
+    { "from": "components/dialogs/EditTimeEntryDialog.tsx", "to": "components/dialogs/EditTimeEntryDialog.tsx" }
+  ],
+  "providesContract": {
+    "schema": {
+      "library": "@/lib/db/schema/time-entries",
+      "exports": ["timeEntries", "TimeEntry", "NewTimeEntry"]
+    },
+    "lib": {
+      "library": "@/lib/time-utils",
+      "exports": [
+        "timeToMinutes",
+        "minutesToTime",
+        "calculateWorkHours",
+        "calculateAutoBreak",
+        "generateBreakPeriod",
+        "getWeekNumber",
+        "BreakRule"
+      ]
+    },
+    "endpoints": [
+      "GET    /api/time-entries?startDate&endDate — list entries for the signed-in user",
+      "POST   /api/time-entries — create",
+      "PUT    /api/time-entries — update (id in body)",
+      "DELETE /api/time-entries?id=... | ?all=true — delete"
+    ],
+    "components": [
+      "DatePicker (Monday-first calendar, Today shortcut)",
+      "TimePicker (Material-style 24h analog clock with text fallback)",
+      "TaskSegmentEditor (split a shift into labelled segments)",
+      "CalendarMonthView / CalendarWeekView / CalendarViewToggle",
+      "EditTimeEntryDialog (full edit form wired to the API route)"
+    ]
+  },
+  "postInstall": [
+    "1. Add `timeEntries` to your lib/db/schema map and push the schema",
+    "2. The schema's `projectId` is optional — set it if you have a projects table, leave null otherwise",
+    "3. Calendar components accept `redDays` (RedDayInfo[]) — pass `getHolidays(year)` from swedish-tax-holidays if you want red-day highlighting",
+    "4. EditTimeEntryDialog defaults to Swedish handels-style overtime options; override via `overtimeOptions` prop",
+    "5. The auto-break helper has built-in defaults (4h→15min, 6h→30min, 8h→60min) — pass `BreakRule[]` to override per project",
+    "6. Date handling rule: ALWAYS use local date components, never toISOString() (causes UTC shift) — see CLAUDE.md from the source project"
+  ]
+}

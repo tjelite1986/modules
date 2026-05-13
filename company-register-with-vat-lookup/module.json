@@ -1,0 +1,60 @@
+{
+  "name": "company-register-with-vat-lookup",
+  "version": "0.1.0",
+  "description": "B2B companies CRUD with internal search and an EU VIES VAT-number lookup that auto-fills name/org-number/address from a Swedish org-number.",
+  "category": "data",
+  "framework": { "next": ">=14", "react": ">=18" },
+  "orm": "drizzle",
+  "database": { "engine": "sqlite" },
+  "dependencies": {
+    "npm": [
+      "next-auth@^4.24.0",
+      "drizzle-orm@^0.45.0",
+      "better-sqlite3@^12.0.0"
+    ],
+    "modules": ["auth-nextauth"]
+  },
+  "devDependencies": {
+    "npm": ["@types/better-sqlite3"]
+  },
+  "files": [
+    { "from": "db/schema.ts", "to": "lib/db/schema/companies.ts" },
+    { "from": "db/schema.sql", "to": "db/migrations/companies.sql", "optional": true },
+    { "from": "lib/vat.ts", "to": "lib/vat.ts" },
+    { "from": "api/route.ts", "to": "app/api/companies/route.ts" },
+    { "from": "api/lookup.ts", "to": "app/api/companies/lookup/route.ts" },
+    { "from": "api/vat-lookup.ts", "to": "app/api/companies/vat-lookup/route.ts", "optional": true }
+  ],
+  "providesContract": {
+    "library": "@/lib/vat",
+    "exports": [
+      "toSwedishVatNumber",
+      "formatSwedishOrgNumber",
+      "generateCompanyNumber",
+      "parseSwedishAddress"
+    ],
+    "schema": { "library": "@/lib/db/schema/companies", "exports": ["companies", "Company", "NewCompany"] },
+    "endpoints": [
+      "GET /api/companies — list",
+      "POST /api/companies — create",
+      "PATCH /api/companies — update (id in body)",
+      "DELETE /api/companies?id=... — delete",
+      "GET /api/companies/lookup?q=... — fuzzy search by name/number/orgnr",
+      "GET /api/companies/vat-lookup?orgnr=... — EU VIES auto-fill (Sweden-specific, optional)"
+    ]
+  },
+  "externalServices": [
+    {
+      "name": "VATComply (EU VIES proxy)",
+      "url": "https://api.vatcomply.com/vat",
+      "auth": "none",
+      "rateLimit": "fair-use; cache responses if used heavily"
+    }
+  ],
+  "postInstall": [
+    "1. Add `companies` to your lib/db/schema map",
+    "2. Push the schema: drizzle-kit push (or run db/migrations/companies.sql)",
+    "3. The vat-lookup route is Sweden-specific — drop it (and lib/vat.ts SE helpers) if you only need the CRUD",
+    "4. VIES is fair-use — wrap with a server-side cache for high traffic"
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "name": "avatar-banner-upload",
+  "version": "0.1.0",
+  "description": "Avatar and banner upload with in-browser cropping. Server-side resize + content-hash filename to avoid duplicates. <Avatar /> component handles deterministic colour fallbacks.",
+  "category": "ui",
+  "framework": {
+    "next": ">=14",
+    "react": ">=18"
+  },
+  "dependencies": {
+    "npm": [
+      "react-easy-crop@^5",
+      "lucide-react@^0.451"
+    ],
+    "modules": ["authentication", "file-upload-storage"]
+  },
+  "files": [
+    { "from": "components/Avatar.tsx", "to": "src/components/Avatar.tsx" },
+    { "from": "components/AvatarCropModal.tsx", "to": "src/components/AvatarCropModal.tsx" },
+    { "from": "api/avatars/", "to": "src/app/api/avatars/" },
+    { "from": "api/banners/", "to": "src/app/api/banners/" }
+  ],
+  "envVars": [],
+  "postInstall": [
+    "1. The Avatar component reads `avatar` (filename) and `username` from props",
+    "2. AvatarCropModal returns a Blob — POST it to /api/avatars with multipart/form-data",
+    "3. The avatar route stores the file as <userId>-<sha256>.png under the upload dir from file-upload-storage",
+    "4. Banner upload follows the same pattern via /api/banners"
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "name": "auto-share-folder-watcher",
+  "version": "0.1.0",
+  "description": "Watches configured folders and auto-shares new files to a chat channel as messages. Uses folder_config from file-upload-storage.",
+  "category": "data",
+  "framework": { "next": ">=14" },
+  "dependencies": {
+    "npm": ["socket.io@^4", "better-sqlite3@^9.6.0"],
+    "modules": ["authentication", "channel-management", "live-chat", "file-upload-storage"]
+  },
+  "files": [
+    { "from": "lib/folder-watcher.js", "to": "src/lib/folder-watcher.js" }
+  ],
+  "envVars": [
+    {
+      "name": "UPLOADS_DIR",
+      "description": "Same as file-upload-storage — the base for watched folders",
+      "required": false
+    }
+  ],
+  "providesContract": {
+    "server": { "library": "@/lib/folder-watcher", "exports": ["setupFolderWatchers"] }
+  },
+  "requiresContract": {
+    "tables": ["folder_config (from file-upload-storage)", "messages (from live-chat)", "users"],
+    "globals": ["global._syncWatchers (set to the return value from setup so the API can trigger re-sync)"]
+  },
+  "postInstall": [
+    "1. No own DB schema — folder_config comes from file-upload-storage",
+    "2. In server.js after io is up:",
+    "   const { setupFolderWatchers } = require('./src/lib/folder-watcher');",
+    "   const watcher = setupFolderWatchers(io, db);",
+    "   global._syncWatchers = watcher.syncWatchers;",
+    "3. Configure autoshare via PATCH /api/folders/[id] with { autoshareChannelId: X }"
+  ]
+}

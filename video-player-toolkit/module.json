@@ -1,0 +1,48 @@
+{
+  "name": "video-player-toolkit",
+  "version": "0.1.0",
+  "description": "Hooks and components to build a YouTube-style video player: keyboard shortcuts, position-resume in localStorage, OSD overlay, speed picker, and a Continue-Watching carousel that reads from the resume store.",
+  "category": "ui",
+  "framework": { "next": ">=14", "react": ">=18" },
+  "dependencies": {
+    "npm": [],
+    "modules": []
+  },
+  "files": [
+    { "from": "hooks/usePlayerKeyboard.ts", "to": "hooks/usePlayerKeyboard.ts" },
+    { "from": "hooks/useVideoResume.ts", "to": "hooks/useVideoResume.ts" },
+    { "from": "components/PlayerOsd.tsx", "to": "components/PlayerOsd.tsx" },
+    { "from": "components/SpeedSelector.tsx", "to": "components/SpeedSelector.tsx" },
+    { "from": "components/ContinueWatching.tsx", "to": "components/ContinueWatching.tsx", "optional": true }
+  ],
+  "envVars": [
+    {
+      "name": "NEXT_PUBLIC_VIDEO_RESUME_PREFIX",
+      "description": "localStorage key prefix used by useVideoResume / readResumePositions / ContinueWatching. Default: video_resume_. Customise if multiple apps share the same browser origin.",
+      "required": false,
+      "example": "myapp_resume_"
+    }
+  ],
+  "providesContract": {
+    "hooks": {
+      "library": "@/hooks/usePlayerKeyboard",
+      "exports": ["usePlayerKeyboard"]
+    },
+    "resume": {
+      "library": "@/hooks/useVideoResume",
+      "exports": ["useVideoResume", "readResumePositions"]
+    },
+    "components": [
+      "PlayerOsd from @/components/PlayerOsd",
+      "SpeedSelector from @/components/SpeedSelector",
+      "ContinueWatching from @/components/ContinueWatching"
+    ]
+  },
+  "postInstall": [
+    "1. Wrap your <video> with the hooks: const { videoRef, resumedFrom } = useVideoResume(item.id); const { osd } = usePlayerKeyboard(videoRef);",
+    "2. Position <PlayerOsd text={osd} /> absolutely inside the video container",
+    "3. <SpeedSelector videoRef={videoRef} /> goes anywhere below the player",
+    "4. ContinueWatching needs you to wire `fetchItems` to your own /api endpoint that takes ids and returns title/duration/thumbnailUrl",
+    "5. If you ship more than one app on the same origin, set NEXT_PUBLIC_VIDEO_RESUME_PREFIX so resume positions don't collide"
+  ]
+}

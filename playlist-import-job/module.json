@@ -1,0 +1,36 @@
+{
+  "name": "playlist-import-job",
+  "version": "0.1.0",
+  "description": "Bulk-import every entry of a yt-dlp-supported playlist URL (YouTube, Vimeo, etc.) into a local `media` table. Single transaction, returns per-item counts and errors. Pair with background-job-template for very large playlists.",
+  "category": "data",
+  "framework": { "next": ">=14" },
+  "dependencies": {
+    "npm": [
+      "next-auth@^4.24.0",
+      "better-sqlite3@^12.0.0"
+    ],
+    "modules": ["auth-nextauth", "ytdlp-wrapper", "media-utils"]
+  },
+  "devDependencies": {
+    "npm": ["@types/better-sqlite3"]
+  },
+  "files": [
+    { "from": "db/schema.sql", "to": "db/migrations/playlist-import-media.sql", "optional": true },
+    { "from": "lib/import-playlist.ts", "to": "lib/import-playlist.ts" },
+    { "from": "api/import-playlist.ts", "to": "app/api/admin/import-playlist/route.ts" }
+  ],
+  "providesContract": {
+    "library": "@/lib/import-playlist",
+    "exports": ["importPlaylist", "buildEntryUrl", "pickEntryThumbnail", "ImportResult"],
+    "endpoints": [
+      "POST /api/admin/import-playlist — body { url, category?, is_adult? } (admin)"
+    ]
+  },
+  "postInstall": [
+    "1. Install ytdlp-wrapper and media-utils first — this module depends on them",
+    "2. Make sure the `media` table exists with at least: title, type, url, thumbnail_url, duration, category, needs_ytdlp, is_adult (see db/migrations/playlist-import-media.sql for the minimal version)",
+    "3. If your media schema has different column names, edit the INSERT statement in lib/import-playlist.ts",
+    "4. POST a YouTube/Vimeo playlist URL — runs synchronously (one yt-dlp call + one DB transaction)",
+    "5. For playlists over a few hundred items, wrap this with the background-job-template so the HTTP request returns immediately and the client polls for progress"
+  ]
+}

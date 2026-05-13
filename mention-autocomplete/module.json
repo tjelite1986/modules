@@ -1,0 +1,22 @@
+{
+  "name": "mention-autocomplete",
+  "version": "0.1.0",
+  "description": "GET /api/mention-suggestions?q=X&type=user|channel — for @-autocomplete while writing messages",
+  "category": "data",
+  "framework": { "next": ">=14" },
+  "dependencies": {
+    "npm": ["better-sqlite3@^9.6.0"],
+    "modules": ["authentication"],
+    "softModules": ["channel-management"]
+  },
+  "files": [
+    { "from": "api/mention-suggestions/route.ts", "to": "src/app/api/mention-suggestions/route.ts" }
+  ],
+  "envVars": [],
+  "requiresContract": {
+    "tables": ["users", "channels (when type=channel is used)"]
+  },
+  "postInstall": [
+    "Nothing — only requires the users table (from auth) and the channels table (from channel-management) if you want to use type=channel"
+  ]
+}

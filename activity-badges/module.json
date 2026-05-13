@@ -1,0 +1,29 @@
+{
+  "name": "activity-badges",
+  "version": "0.1.0",
+  "description": "Activity counters per user (messages sent, photos uploaded, ...) plus a rule-driven badge engine that grants achievements when counters cross thresholds.",
+  "category": "data",
+  "framework": {
+    "next": ">=14",
+    "react": ">=18"
+  },
+  "dependencies": {
+    "npm": [
+      "better-sqlite3@^9"
+    ],
+    "modules": ["authentication"]
+  },
+  "files": [
+    { "from": "lib/activity.ts", "to": "src/lib/activity.ts" },
+    { "from": "lib/badges.ts", "to": "src/lib/badges.ts" },
+    { "from": "api/", "to": "src/app/api/badges/" },
+    { "from": "db/schema.sql", "to": "db/migrations/006_activity_badges.sql" }
+  ],
+  "envVars": [],
+  "postInstall": [
+    "1. Run the DB migration",
+    "2. Call recordActivity(userId, 'message_sent') at the relevant hot paths",
+    "3. Call evaluateBadges(userId) after recordActivity (or on a timer) to grant any newly-earned badges",
+    "4. Customise the badge rules in lib/badges.ts to match your app's flavour"
+  ]
+}

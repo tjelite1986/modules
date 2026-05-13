@@ -1,0 +1,48 @@
+{
+  "name": "customer-register",
+  "version": "0.1.0",
+  "description": "CRUD for a customers table plus flexible lookup (by customer number, phone, or SSN with format normalisation) and an optional cross-table transaction history aggregator.",
+  "category": "data",
+  "framework": { "next": ">=14", "react": ">=18" },
+  "orm": "drizzle",
+  "database": { "engine": "sqlite" },
+  "dependencies": {
+    "npm": [
+      "next-auth@^4.24.0",
+      "drizzle-orm@^0.45.0",
+      "better-sqlite3@^12.0.0"
+    ],
+    "modules": ["auth-nextauth"]
+  },
+  "devDependencies": {
+    "npm": ["@types/better-sqlite3"]
+  },
+  "files": [
+    { "from": "db/schema.ts", "to": "lib/db/schema/customers.ts" },
+    { "from": "db/schema.sql", "to": "db/migrations/customers.sql", "optional": true },
+    { "from": "lib/customers.ts", "to": "lib/customers.ts" },
+    { "from": "api/route.ts", "to": "app/api/customers/route.ts" },
+    { "from": "api/lookup.ts", "to": "app/api/customers/lookup/route.ts" },
+    { "from": "api/history.ts", "to": "app/api/customers/history/route.ts", "optional": true }
+  ],
+  "providesContract": {
+    "library": "@/lib/customers",
+    "exports": ["generateCustomerNumber", "ssnVariants", "composeName"],
+    "schema": { "library": "@/lib/db/schema/customers", "exports": ["customers", "Customer", "NewCustomer"] },
+    "endpoints": [
+      "GET /api/customers — list",
+      "POST /api/customers — create",
+      "PATCH /api/customers — update (id in body)",
+      "DELETE /api/customers?id=... — delete",
+      "GET /api/customers/lookup?q=... | ?ssn=... | ?ssn_search=... — exact or partial lookup",
+      "GET /api/customers/history?customer_number=... | ?ssn=... — aggregate transactions (optional)"
+    ]
+  },
+  "postInstall": [
+    "1. Add `customers` to the schema map exported by lib/db/schema (or your equivalent index)",
+    "2. Push the schema: drizzle-kit push (or run db/migrations/customers.sql manually)",
+    "3. The history route requires sales/repair/order/invoice/pickup tables — delete it or trim its references if you don't have all of them",
+    "4. Adjust generateCustomerNumber() if you need a different numbering format",
+    "5. ssnVariants() is Sweden-specific — drop or replace for other locales"
+  ]
+}

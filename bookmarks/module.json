@@ -1,0 +1,21 @@
+{
+  "name": "bookmarks",
+  "version": "0.1.0",
+  "description": "Save messages as bookmarks. List, add, remove. Bookmarks are personal per user.",
+  "category": "data",
+  "framework": { "next": ">=14" },
+  "dependencies": {
+    "npm": ["better-sqlite3@^9.6.0"],
+    "modules": ["authentication", "live-chat"]
+  },
+  "files": [
+    { "from": "api/bookmarks/route.ts", "to": "src/app/api/bookmarks/route.ts" },
+    { "from": "api/bookmarks/[messageId]/route.ts", "to": "src/app/api/bookmarks/[messageId]/route.ts" },
+    { "from": "db/schema.sql", "to": "db/migrations/006_bookmarks.sql" }
+  ],
+  "envVars": [],
+  "postInstall": [
+    "1. sqlite3 data/app.db < db/migrations/006_bookmarks.sql",
+    "2. Add bookmark buttons to your MessageItem component"
+  ]
+}

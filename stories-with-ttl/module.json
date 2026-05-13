@@ -1,0 +1,32 @@
+{
+  "name": "stories-with-ttl",
+  "version": "0.1.0",
+  "description": "Instagram/Snapchat-style ephemeral stories with configurable TTL (default 24h) and on-disk archival when expired.",
+  "category": "media",
+  "framework": {
+    "next": ">=14",
+    "react": ">=18"
+  },
+  "dependencies": {
+    "npm": [
+      "better-sqlite3@^9",
+      "lucide-react@^0.451"
+    ],
+    "modules": ["authentication"]
+  },
+  "files": [
+    { "from": "lib/stories.ts", "to": "src/lib/stories.ts" },
+    { "from": "components/StoryBar.tsx", "to": "src/components/StoryBar.tsx" },
+    { "from": "components/StoryViewer.tsx", "to": "src/components/StoryViewer.tsx" },
+    { "from": "api/", "to": "src/app/api/stories/" },
+    { "from": "db/schema.sql", "to": "db/migrations/030_share_and_stories.sql" }
+  ],
+  "envVars": [
+    { "name": "STORY_TTL_HOURS", "description": "Hours before a story is archived. Default 24.", "required": false, "example": "24" }
+  ],
+  "postInstall": [
+    "1. Run the DB migration to create the stories table",
+    "2. Mount StoryBar on the top of your feed and pass currentUserId",
+    "3. Schedule an archive job that moves expired stories to <profile>/stories/_expired/ — see elite-archive-expired-stories.py in the transcoder-pipeline module"
+  ]
+}

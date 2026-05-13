@@ -1,0 +1,36 @@
+{
+  "name": "web-push-vapid",
+  "version": "0.1.0",
+  "description": "VAPID-based Web Push notifications. Subscribe / unsubscribe API, per-user subscription storage, server-side send helper.",
+  "category": "notification",
+  "framework": {
+    "next": ">=14",
+    "react": ">=18"
+  },
+  "dependencies": {
+    "npm": [
+      "web-push@^3.6",
+      "@types/web-push@^3.6",
+      "better-sqlite3@^9"
+    ],
+    "modules": ["authentication"]
+  },
+  "files": [
+    { "from": "lib/push.ts", "to": "src/lib/push.ts" },
+    { "from": "lib/pushClient.ts", "to": "src/lib/pushClient.ts" },
+    { "from": "api/", "to": "src/app/api/push/" },
+    { "from": "db/schema.sql", "to": "db/migrations/033_push_subscriptions.sql" }
+  ],
+  "envVars": [
+    { "name": "VAPID_PUBLIC_KEY", "description": "Generate with `npx web-push generate-vapid-keys`", "required": true },
+    { "name": "VAPID_PRIVATE_KEY", "description": "Generate with `npx web-push generate-vapid-keys`", "required": true },
+    { "name": "VAPID_CONTACT", "description": "mailto: URL used as the Subject in the VAPID JWT", "required": true, "example": "mailto:you@example.com" }
+  ],
+  "postInstall": [
+    "1. Generate VAPID keys: npx web-push generate-vapid-keys",
+    "2. Add the three env vars to your .env",
+    "3. Run the DB migration",
+    "4. Register the service worker (see pwa-service-worker module) — it handles the 'push' event",
+    "5. Call subscribeToPush() from your client UI to ask the user for permission and POST a subscription"
+  ]
+}

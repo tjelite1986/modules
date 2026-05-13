@@ -1,0 +1,8 @@
+[Unit]
+Description=Watch elite trigger for manual transcode run
+
+[Path]
+PathExists=/var/lib/elite-triggers/transcode
+
+[Install]
+WantedBy=multi-user.target

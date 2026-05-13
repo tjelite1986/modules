@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Module Registry",
+  "type": "object",
+  "required": ["name", "version", "modules"],
+  "properties": {
+    "name": { "type": "string" },
+    "version": { "type": "string" },
+    "description": { "type": "string" },
+    "modules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "path", "description", "category"],
+        "properties": {
+          "name": { "type": "string" },
+          "path": { "type": "string", "description": "Relative path to the module folder" },
+          "description": { "type": "string" },
+          "category": {
+            "type": "string",
+            "enum": ["chat", "auth", "ui", "data", "notification", "other"]
+          },
+          "tags": { "type": "array", "items": { "type": "string" } },
+          "version": { "type": "string" },
+          "status": {
+            "type": "string",
+            "enum": ["draft", "stable", "deprecated"]
+          },
+          "orm": {
+            "type": "string",
+            "description": "Optional. Which ORM the module's db code uses. Omit if there is no DB code or the module is ORM-agnostic.",
+            "enum": ["drizzle", "raw-sqlite", "prisma"]
+          }
+        }
+      }
+    }
+  }
+}

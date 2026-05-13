@@ -1,0 +1,43 @@
+{
+  "name": "photo-gallery",
+  "version": "0.1.0",
+  "description": "Google-Photos-style library: timeline, albums, smart albums, map view, auto-trip detection, year-in-review, tag browser, share links, EXIF + geotag, content-hash dedup",
+  "category": "media",
+  "framework": {
+    "next": ">=14",
+    "react": ">=18"
+  },
+  "dependencies": {
+    "npm": [
+      "better-sqlite3@^9",
+      "exifr@^7",
+      "leaflet@^1.9",
+      "react-leaflet@^4.2",
+      "leaflet.heat@^0.2",
+      "leaflet.markercluster@^1.5",
+      "html-to-image@^1.11",
+      "react-easy-crop@^5",
+      "archiver@^8",
+      "lucide-react@^0.451"
+    ],
+    "modules": ["authentication", "file-upload-storage"]
+  },
+  "files": [
+    { "from": "lib/gallery.ts", "to": "src/lib/gallery.ts" },
+    { "from": "lib/galleryStorage.ts", "to": "src/lib/galleryStorage.ts" },
+    { "from": "lib/gallery-types.ts", "to": "src/app/gallery/types.ts" },
+    { "from": "components/", "to": "src/app/gallery/" },
+    { "from": "api/", "to": "src/app/api/gallery/" },
+    { "from": "db/schema.sql", "to": "db/migrations/021_gallery.sql" }
+  ],
+  "envVars": [
+    { "name": "GALLERY_ROOT", "description": "Host path mounted inside the container where gallery items live", "required": true, "example": "/store/gallery" }
+  ],
+  "postInstall": [
+    "1. Run DB migration to create gallery_items / gallery_albums / gallery_trips / gallery_smart_albums tables",
+    "2. Mount a host volume at GALLERY_ROOT for original files",
+    "3. Add a Leaflet stylesheet to layout.tsx (e.g. import 'leaflet/dist/leaflet.css')",
+    "4. Map view uses OpenStreetMap by default; no API key needed",
+    "5. Reverse-geocoding (geocode route) hits photon.komoot.io with a User-Agent — change to your hostname"
+  ]
+}

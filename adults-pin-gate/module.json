@@ -1,0 +1,27 @@
+{
+  "name": "adults-pin-gate",
+  "version": "0.1.0",
+  "description": "Per-user 4-digit PIN that gates 18+ areas. Stored as a bcrypt hash on the users table. Single-component wrapper — drop <AdultsPinGate> around any page.",
+  "category": "auth",
+  "framework": {
+    "next": ">=14",
+    "react": ">=18"
+  },
+  "dependencies": {
+    "npm": [
+      "bcryptjs@^2.4"
+    ],
+    "modules": ["authentication"]
+  },
+  "files": [
+    { "from": "components/AdultsPinGate.tsx", "to": "src/components/AdultsPinGate.tsx" },
+    { "from": "db/schema.sql", "to": "db/migrations/032_users_adults_pin.sql" }
+  ],
+  "envVars": [],
+  "postInstall": [
+    "1. Run the DB migration (adds adults_pin_hash to users)",
+    "2. Wrap any 18+ page with <AdultsPinGate>...</AdultsPinGate>",
+    "3. The component prompts for a 4-digit PIN; first entry sets it, subsequent entries verify",
+    "4. Session-scoped unlock (sessionStorage), so closing the tab re-locks"
+  ]
+}

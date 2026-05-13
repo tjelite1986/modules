@@ -1,0 +1,31 @@
+{
+  "name": "user-profiles",
+  "version": "0.1.0",
+  "description": "User profiles — bio, display name, email, password change, avatar upload, and session management (remote logout)",
+  "category": "auth",
+  "framework": { "next": ">=14", "react": ">=18" },
+  "dependencies": {
+    "npm": ["bcryptjs@^2.4.3", "better-sqlite3@^9.6.0"],
+    "modules": ["authentication"],
+    "softModules": ["file-upload-storage"]
+  },
+  "files": [
+    { "from": "api/users/route.ts", "to": "src/app/api/users/route.ts" },
+    { "from": "api/users/me/route.ts", "to": "src/app/api/users/me/route.ts" },
+    { "from": "api/sessions/route.ts", "to": "src/app/api/sessions/route.ts" },
+    { "from": "api/sessions/[id]/route.ts", "to": "src/app/api/sessions/[id]/route.ts" },
+    { "from": "api/avatars/[filename]/route.ts", "to": "src/app/api/avatars/[filename]/route.ts" },
+    { "from": "db/schema.sql", "to": "db/migrations/005_user_profiles.sql" }
+  ],
+  "envVars": [],
+  "requiresContract": {
+    "library": "@/lib/db",
+    "tables": ["users", "sessions"],
+    "softLibrary": "@/lib/uploadPaths exports getAvatarsDir() — comes from file-upload-storage. Or write a simple inline version: () => path.join(process.env.DATA_DIR || './data', 'avatars')"
+  },
+  "postInstall": [
+    "1. Run DB migration (ignore 'duplicate column'): sqlite3 data/app.db < db/migrations/005_user_profiles.sql",
+    "2. Create lib/uploadPaths.ts if it doesn't exist (see README) — alternatively install the file-upload-storage module",
+    "3. Client — fetch /api/users/me for the current profile, PATCH to update"
+  ]
+}

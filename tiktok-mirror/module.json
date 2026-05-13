@@ -1,0 +1,40 @@
+{
+  "name": "tiktok-mirror",
+  "version": "0.1.0",
+  "description": "Self-hosted TikTok mirror: follow profiles, cache metadata daily, lazy-download videos on first watch. Uses yt-dlp under the hood.",
+  "category": "media",
+  "framework": {
+    "next": ">=14",
+    "react": ">=18"
+  },
+  "dependencies": {
+    "npm": [
+      "better-sqlite3@^9",
+      "lucide-react@^0.451"
+    ],
+    "system": [
+      "yt-dlp"
+    ],
+    "modules": ["authentication", "clips-library"]
+  },
+  "files": [
+    { "from": "lib/tiktok.ts", "to": "src/lib/tiktok.ts" },
+    { "from": "lib/tiktokComments.ts", "to": "src/lib/tiktokComments.ts" },
+    { "from": "lib/tiktokStats.ts", "to": "src/lib/tiktokStats.ts" },
+    { "from": "lib/cron-sync.sh", "to": "deploy/cron/tiktok-sync" },
+    { "from": "components/", "to": "src/app/videos/tiktok/" },
+    { "from": "api/", "to": "src/app/api/tiktok/" },
+    { "from": "db/schema.sql", "to": "db/migrations/017_tiktok.sql" }
+  ],
+  "envVars": [
+    { "name": "TIKTOK_ROOT", "description": "Host directory where downloaded TikTok videos are cached", "required": true, "example": "/store/tiktok" },
+    { "name": "SYNC_TOKEN", "description": "Shared secret used by the daily sync cron to authenticate", "required": true, "example": "openssl rand -hex 32" }
+  ],
+  "postInstall": [
+    "1. Run DB migration",
+    "2. Install yt-dlp on the host (already in the Docker image if you use the Elite Dockerfile)",
+    "3. Mount a host volume at TIKTOK_ROOT",
+    "4. Add saved profiles via POST /api/tiktok/profiles",
+    "5. Optional: install deploy/cron/tiktok-sync as a daily cron to refresh metadata"
+  ]
+}

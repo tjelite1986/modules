@@ -1,0 +1,34 @@
+{
+  "name": "template-name",
+  "version": "0.1.0",
+  "description": "Short description of the pattern this template provides",
+  "category": "crud | auth | ui | data | integration | other",
+  "framework": {
+    "next": ">=14",
+    "react": ">=18"
+  },
+  "placeholders": {
+    "ENTITY": "PascalCase entity name (e.g. Invoice, Customer)",
+    "entity": "camelCase entity name (e.g. invoice, customer)",
+    "entities": "plural lowercase (e.g. invoices, customers)"
+  },
+  "dependencies": {
+    "npm": [],
+    "modules": []
+  },
+  "files": [
+    {
+      "from": "api/route.ts",
+      "to": "app/api/{{entities}}/route.ts"
+    },
+    {
+      "from": "db/schema.ts",
+      "to": "lib/db/schema/{{entity}}.ts"
+    }
+  ],
+  "postInstall": [
+    "1. Replace {{ENTITY}} / {{entity}} / {{entities}} placeholders with your concrete names",
+    "2. Add the schema export to your Drizzle index file",
+    "3. Push the schema to your database"
+  ]
+}

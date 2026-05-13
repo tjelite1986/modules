@@ -1,0 +1,30 @@
+{
+  "name": "media-utils",
+  "version": "0.1.0",
+  "description": "Pure utility functions for media URLs and metadata: YouTube URL detection / ID extraction, thumbnail building, duration and view-count formatting, URL classification (youtube / direct / ytdlp). Zero dependencies.",
+  "category": "other",
+  "framework": { "next": ">=14" },
+  "dependencies": {
+    "npm": [],
+    "modules": []
+  },
+  "files": [
+    { "from": "lib/media.ts", "to": "lib/media.ts" }
+  ],
+  "providesContract": {
+    "library": "@/lib/media",
+    "exports": [
+      "isYouTubeUrl",
+      "extractYouTubeId",
+      "getYouTubeThumbnail",
+      "isDirectMediaUrl",
+      "formatDuration",
+      "formatViews",
+      "classifyMediaUrl"
+    ]
+  },
+  "postInstall": [
+    "Just import what you need — no setup, no env vars, no dependencies",
+    "Pairs naturally with ytdlp-wrapper (use classifyMediaUrl to decide whether to call yt-dlp) and video-player-toolkit"
+  ]
+}
