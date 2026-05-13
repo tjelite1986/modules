@@ -21,7 +21,7 @@ Reusable feature packages and patterns for Next.js projects. Built for personal 
 - [Conventions](#conventions)
 - [Categories](#categories)
 - [Source projects](#source-projects)
-- [Toward a CLI](#toward-a-cli)
+- [Roadmap](#roadmap)
 - [Related projects](#related-projects)
 - [Changelog](./CHANGELOG.md)
 - [License](#license)
@@ -124,9 +124,27 @@ Modules were extracted from these real apps:
 | `elitetube` (self-hosted media) | 5 — yt-dlp wrapper, media utils, player toolkit, PIN gate, playlist import |
 | `tidsrapport` (Swedish payroll) | 4 — time entries, tax/holidays, PDF generator, Claude Vision parser |
 
-## Toward a CLI
+## Roadmap
 
-The roadmap is a `npx <cli> add <module>` flow that reads a module's `module.json`, fetches the files from this repo, and writes them at the right paths in the consumer project — same idea as `shadcn`. Until then, manual copy works.
+Rolling — open an issue if you want to weigh in on priorities or propose a module.
+
+### Shipping next
+
+- **`npx <cli> add <module>` flow** — read a module's `module.json`, fetch the files from this repo, write them at the right paths in the consumer project. Same idea as `shadcn`. Design lives in `PLAN-cli-2026-05-03.md` (kept private; ask if you want a copy).
+- **Drizzle ports of the raw-SQL modules** — keep both schemas side by side per module (Drizzle migrations + `db/schema.sql` fallback)
+
+### Exploring
+
+- **Module versioning + a CHANGELOG per module** — right now versions live in each `module.json` but bumps aren't tracked anywhere. A per-module `CHANGELOG.md` would help consumers decide when to update
+- **Compatibility matrix** — generate a table of which modules pair cleanly with which others, derived from `dependencies.modules` in `module.json`
+- **Live preview pages** — for UI modules, a `/preview/<module>` route in [elite-hub](https://github.com/tjelite1986/elite-hub) that mounts the component in isolation
+- **Snapshot tests** — minimal Vitest snapshots of generated UI to catch unintended regressions across module updates
+
+### Wishlist (not committed)
+
+- Auto-extract new modules from elite-hub via a script that reads markers in the source
+- Federation: a `modules.json` index that other people's module libraries can publish, with a CLI command that can pull from any compatible source
+- Cost-aware modules — opt-in tagging of which modules call paid APIs and rough cost-per-request
 
 ## Related projects
 
