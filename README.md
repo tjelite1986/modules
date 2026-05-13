@@ -4,6 +4,22 @@ Reusable feature packages and patterns for Next.js projects. Built for personal 
 
 > **57 modules + 2 templates** at the time of writing. Everything is plain TypeScript, Next.js 14 App Router, Drizzle or raw `better-sqlite3`, NextAuth or hand-rolled JWT, Tailwind. No build step — copy files and go.
 
+## Requirements
+
+To drop these modules into your own project, you need:
+
+| | Version | Why |
+|---|---|---|
+| **Node.js** | 18+ (20+ recommended) | Runtime |
+| **TypeScript** | 5+ | Every `.ts` / `.tsx` file |
+| **Next.js** | 14, App Router | API routes use `route.ts`, components rely on `"use client"` directives |
+| **React** | 18+ | Server + client components |
+| **Tailwind CSS** | 3+ | All UI components ship with Tailwind classes |
+| **better-sqlite3** | 9+ | Most DB-bearing modules. A few Drizzle modules also include a Drizzle schema |
+| **socket.io** | 4+ | Only needed for `live-chat`, `presence-system`, `direct-messaging`, `notification-bell` |
+
+These modules **do not** work as-is with: Pages Router, Astro, SvelteKit, Remix, Nuxt, Express-only, Django, Rails. The patterns and SQL schemas could be ported, but the React components and route handlers are Next-App-Router-specific.
+
 ## Two kinds of things in here
 
 | | Modules (`./`) | Templates (`./templates/`) |
@@ -29,11 +45,10 @@ modules/                          (= repo root)
 │   ├── db/                       ← schema.ts (Drizzle) and/or schema.sql (raw)
 │   ├── lib/                      ← helpers, clients
 │   └── hooks/                    ← React hooks
-├── templates/                    ← scaffolds (sibling category)
-│   ├── registry.json
-│   ├── _template/
-│   └── <template-name>/
-└── NOTES-*.md                    ← extraction notes per source project
+└── templates/                    ← scaffolds (sibling category)
+    ├── registry.json
+    ├── _template/
+    └── <template-name>/
 ```
 
 ## Install a module (manual; CLI coming later)
@@ -78,13 +93,12 @@ Modules were extracted from these real apps:
 
 | Source | Modules contributed |
 |---|---|
+| [`elite-hub`](https://github.com/tjelite1986/elite-hub) (self-hosted personal hub) | 16 — photo-gallery, clips, tiktok-mirror, instagram-mirror, web-push, stories, follows, transcoder pipeline, notification bell, PWA, adults-pin, activity-badges, avatar upload, section-tabs, dashboard-shell, privacy-screenshot |
 | `elitemess` (chat app) | 16 — auth, chat, presence, files, social feed |
 | `elitestore` (app store) | 11 — auth-nextauth, catalog, asset serving, downloads, browse pages |
 | `dashboard` (Swedish small-business mgmt) | 5 (Drizzle) — customer/company/article/repair register + Biltema lookup |
 | `elitetube` (self-hosted media) | 5 — yt-dlp wrapper, media utils, player toolkit, PIN gate, playlist import |
 | `tidsrapport` (Swedish payroll) | 4 — time entries, tax/holidays, PDF generator, Claude Vision parser |
-
-`NOTES-*.md` files capture the design choices and known caveats from each extraction.
 
 ## Toward a CLI
 
