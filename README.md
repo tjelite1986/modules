@@ -111,6 +111,10 @@ Modules were extracted from these real apps:
 
 The roadmap is a `npx <cli> add <module>` flow that reads a module's `module.json`, fetches the files from this repo, and writes them at the right paths in the consumer project — same idea as `shadcn`. Until then, manual copy works.
 
+## Related projects
+
+- **[elite-hub](https://github.com/tjelite1986/elite-hub)** — self-hosted personal hub running on Next.js 14, Docker + Traefik. The reference / live showcase that 16 of the modules here were extracted from. Look there to see `photo-gallery`, `clips-library`, `tiktok-mirror`, `web-push-vapid`, `dashboard-shell`, `privacy-screenshot` and others composed into one working app.
+
 ## License
 
 MIT
