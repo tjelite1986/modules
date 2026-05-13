@@ -1,0 +1,79 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  validate:
+    name: Validate registry and modules
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: '20'
+
+      - name: registry.json is valid JSON
+        run: jq empty registry.json
+
+      - name: Every module.json is valid JSON
+        run: |
+          set -e
+          find . -name module.json -not -path './node_modules/*' -print0 | xargs -0 -I {} jq empty {}
+          echo "All module.json files parse"
+
+      - name: registry.json matches on-disk module folders
+        run: |
+          set -e
+          REGISTERED=$(jq -r '.modules[].path' registry.json | sort)
+          ON_DISK=$(find . -maxdepth 2 -name module.json -not -path './node_modules/*' -not -path './_template/*' -not -path './templates/*' | sed 's|^\./||;s|/module.json$||' | sort)
+          if [ "$REGISTERED" != "$ON_DISK" ]; then
+            echo "::error::registry.json modules and on-disk module folders are out of sync"
+            echo "--- registered in registry.json ---"
+            echo "$REGISTERED"
+            echo "--- found on disk ---"
+            echo "$ON_DISK"
+            diff <(echo "$REGISTERED") <(echo "$ON_DISK") || true
+            exit 1
+          fi
+          echo "registry.json and on-disk modules match ($(echo "$REGISTERED" | wc -l) modules)"
+
+      - name: Every module folder has a README
+        run: |
+          set -e
+          missing=0
+          for d in $(jq -r '.modules[].path' registry.json); do
+            if [ ! -f "$d/README.md" ]; then
+              echo "::error file=$d/module.json::missing README.md"
+              missing=$((missing+1))
+            fi
+          done
+          if [ $missing -gt 0 ]; then exit 1; fi
+
+  secret-scan:
+    name: Secret and PII scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Scan for personal paths, emails and known secret formats
+        run: |
+          set -e
+          HITS=$(grep -rEnH '/home/thomas|@gmail\.com|mecloud\.win|sk-[a-zA-Z0-9]{20}|JWT_SECRET=[a-f0-9]{32}|192\.168\.[0-9]+\.[0-9]+' \
+            --include='*.md' --include='*.ts' --include='*.tsx' --include='*.json' --include='*.sql' --include='*.sh' --include='*.py' \
+            . 2>/dev/null \
+            | grep -v 'node_modules/' \
+            | grep -v 'CONTRIBUTING.md:' \
+            || true)
+          if [ -n "$HITS" ]; then
+            echo "::error::Possible secret or PII leak detected"
+            echo "$HITS"
+            exit 1
+          fi
+          echo "Clean — no /home/ paths, emails, internal hostnames or known secret formats"
