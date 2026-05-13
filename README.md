@@ -1,5 +1,12 @@
 # tjelite1986/modules
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+[![Next.js](https://img.shields.io/badge/Next.js-14-black?logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Modules](https://img.shields.io/badge/modules-57-violet)](./registry.json)
+[![GitHub stars](https://img.shields.io/github/stars/tjelite1986/modules?style=flat&logo=github)](https://github.com/tjelite1986/modules/stargazers)
+[![Last commit](https://img.shields.io/github/last-commit/tjelite1986/modules)](https://github.com/tjelite1986/modules/commits/main)
+
 Reusable feature packages and patterns for Next.js projects. Built for personal reuse across many projects (chat apps, store, dashboard, time tracking, media library, ...) — extracted from real, shipping code, not designed in a vacuum.
 
 > **57 modules + 2 templates** at the time of writing. Everything is plain TypeScript, Next.js 14 App Router, Drizzle or raw `better-sqlite3`, NextAuth or hand-rolled JWT, Tailwind. No build step — copy files and go.
