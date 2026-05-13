@@ -11,6 +11,21 @@
 
 Reusable feature packages and patterns for Next.js projects. Built for personal reuse across many projects (chat apps, store, dashboard, time tracking, media library, ...) — extracted from real, shipping code, not designed in a vacuum.
 
+## Table of contents
+
+- [Requirements](#requirements)
+- [Two kinds of things in here](#two-kinds-of-things-in-here)
+- [Repository layout](#repository-layout)
+- [Install a module](#install-a-module-manual-cli-coming-later)
+- [Adapt a template](#adapt-a-template)
+- [Conventions](#conventions)
+- [Categories](#categories)
+- [Source projects](#source-projects)
+- [Toward a CLI](#toward-a-cli)
+- [Related projects](#related-projects)
+- [Changelog](./CHANGELOG.md)
+- [License](#license)
+
 > **57 modules + 2 templates** at the time of writing. Everything is plain TypeScript, Next.js 14 App Router, Drizzle or raw `better-sqlite3`, NextAuth or hand-rolled JWT, Tailwind. No build step — copy files and go.
 
 ## Requirements
