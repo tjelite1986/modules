@@ -6,6 +6,19 @@ All notable changes to the modules library are tracked here. Format loosely foll
 
 ## 2026-06-08
 
+### Added
+
+Three modules extracted from the next round of elite-hub work (library count: 58 → 60):
+
+- **`bookshelf`** — Shared bookshelf with EPUB / PDF / CBZ reader, per-user reading-position sync, and FS-driven catalogue scan. Uses `poppler-utils` (`pdftoppm -singlefile`) for PDF covers. Local-file pdfjs worker (bundling via dynamic import is unreliable across Next 14 versions). `epubjs` pinned to `0.3.93` to avoid the `0.4.x` xmldom CVE. Cover/file routes use `verifyTokenLoose` for `?t=` query auth so plain `<img>/<embed>/<iframe>` tags work — requires `authentication >= 0.2.1`.
+- **`video-share`** — Drop-in "share to feed / story / DM" modal. Polymorphic `ShareSource` (gallery item, external mediaUrl, or batch) into one consistent UI over `social-feed`, `stories-with-ttl`, `direct-messaging`. Three-tab UI that gracefully degrades if optional modules aren't installed.
+- **`dashboard-widgets`** — Free-form per-user dashboard: drag, resize from 8 directions, vertical compaction, three breakpoints (lg 24 / md 12 / sm 1 cols). Storage + API + `DashboardGrid` wrapper around `react-grid-layout` 1.5 with custom cyan corner/edge handles. Does **not** include integration widgets (weather / Home Assistant / Docker etc — those are project-specific).
+
+### Changed
+
+- `authentication` (0.2.0 → **0.2.1**) — added `verifyTokenLoose(req)` for `?t=<jwt>` query-string auth on asset routes (covers, books, video files). Internal `verifyTokenString` helper extracted to share between `verifyToken` and the new function. Required by `bookshelf`.
+- `clips-library` (0.2.0 → **0.2.0**, patch in place) — hardened `lib/clipsSync.ts` against argv-flag-smuggling (added `--` separator + `assertSafeUrl` checking `http(s)` and no leading `-`) and path traversal (`assertSafeVideoId` constraining yt-dlp-returned `videoId` to `^[A-Za-z0-9._-]{1,64}$`). Backported from automated security review.
+
 ### Deprecated
 
 - `tiktok-mirror` (0.1.0 → **0.2.0, deprecated**) — superseded by `clips-library`. The TikTok stack has been folded into the unified `clip_profiles` model (auto-poll, per-profile videos limit, sticky skip-list). Module folder kept for reference; will be removed in a future release.

@@ -1,0 +1,54 @@
+{
+  "name": "bookshelf",
+  "version": "0.1.0",
+  "description": "Shared bookshelf with EPUB / PDF / CBZ reader, per-user reading-position sync, and FS-driven catalogue scan. Uses poppler-utils for PDF covers.",
+  "category": "media",
+  "framework": {
+    "next": ">=14",
+    "react": ">=18"
+  },
+  "dependencies": {
+    "npm": [
+      "better-sqlite3@^9",
+      "epubjs@0.3.93",
+      "pdfjs-dist@^4",
+      "jszip@^3.10",
+      "lucide-react@^0.451"
+    ],
+    "system": [
+      "poppler-utils"
+    ],
+    "modules": ["authentication"]
+  },
+  "files": [
+    { "from": "lib/books.ts", "to": "src/lib/books.ts" },
+    { "from": "lib/bookStorage.ts", "to": "src/lib/bookStorage.ts" },
+    { "from": "lib/bookCovers.ts", "to": "src/lib/bookCovers.ts" },
+    { "from": "api/route.ts", "to": "src/app/api/books/route.ts" },
+    { "from": "api/scan/route.ts", "to": "src/app/api/books/scan/route.ts" },
+    { "from": "api/[slug]/route.ts", "to": "src/app/api/books/[slug]/route.ts" },
+    { "from": "api/[slug]/cover/route.ts", "to": "src/app/api/books/[slug]/cover/route.ts" },
+    { "from": "api/[slug]/file/route.ts", "to": "src/app/api/books/[slug]/file/route.ts" },
+    { "from": "api/[slug]/state/route.ts", "to": "src/app/api/books/[slug]/state/route.ts" },
+    { "from": "pages/page.tsx", "to": "src/app/books/page.tsx" },
+    { "from": "pages/[slug]-page.tsx", "to": "src/app/books/[slug]/page.tsx" },
+    { "from": "components/ReaderClient.tsx", "to": "src/app/books/[slug]/ReaderClient.tsx" },
+    { "from": "db/schema.sql", "to": "db/migrations/041_books.sql" }
+  ],
+  "envVars": [
+    { "name": "BOOKS_ROOT", "description": "Host directory containing book files. Bookshelf reads .epub / .pdf / .cbz from here on FS scan.", "required": true, "example": "/store/books" },
+    { "name": "BOOK_COVERS_DIR", "description": "Writable directory where generated PDF covers (PNG, 800px wide) are cached.", "required": true, "example": "/store/book-covers" }
+  ],
+  "requiresContract": {
+    "library": "@/lib/auth",
+    "exports": ["verifyToken", "verifyTokenLoose", "verifyAdmin"],
+    "description": "Asset routes (cover, file) use verifyTokenLoose so plain <img>/<embed>/<iframe> tags can pass ?t=<jwt> query auth. Requires authentication module >= 0.2.1."
+  },
+  "postInstall": [
+    "1. Install poppler-utils on the host (apt: poppler-utils; the pdftoppm binary must be on PATH)",
+    "2. Run DB migration to create books + book_reading_state",
+    "3. Set BOOKS_ROOT and BOOK_COVERS_DIR; mount the former as a host volume",
+    "4. Copy the pdfjs worker into public/pdfjs/pdf.worker.min.mjs — pdfjs-dist ships it but bundling via dynamic import is unreliable across Next 14 versions, so the reader expects a local file",
+    "5. Optional: POST /api/books/scan as admin to ingest drop-in files on first run"
+  ]
+}

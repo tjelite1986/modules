@@ -1,0 +1,44 @@
+{
+  "name": "dashboard-widgets",
+  "version": "0.1.0",
+  "description": "Free-form per-user dashboard layout: drag, resize from any edge / corner, vertical compaction, three breakpoints (lg 24 cols / md 12 cols / sm 1 col). Storage + API + DashboardGrid wrapper around react-grid-layout. Does NOT include integration widgets (weather/HA/docker etc — those are project-specific).",
+  "category": "ui",
+  "framework": {
+    "next": ">=14",
+    "react": ">=18"
+  },
+  "dependencies": {
+    "npm": [
+      "better-sqlite3@^9",
+      "react-grid-layout@^1.5",
+      "react-resizable@^3"
+    ],
+    "modules": ["authentication"]
+  },
+  "devDependencies": {
+    "npm": [
+      "@types/react-grid-layout",
+      "@types/react-resizable"
+    ]
+  },
+  "files": [
+    { "from": "lib/dashboardLayout.ts", "to": "src/lib/dashboardLayout.ts" },
+    { "from": "lib/dashboardSections.ts", "to": "src/lib/dashboardSections.ts" },
+    { "from": "lib/userWidgets.ts", "to": "src/lib/userWidgets.ts" },
+    { "from": "api/dashboard/layout/route.ts", "to": "src/app/api/dashboard/layout/route.ts" },
+    { "from": "api/widgets/mine/layout/route.ts", "to": "src/app/api/widgets/mine/layout/route.ts" },
+    { "from": "components/DashboardGrid.tsx", "to": "src/components/DashboardGrid.tsx" },
+    { "from": "styles/dashboard-grid.css", "to": "src/styles/dashboard-grid.css" },
+    { "from": "db/schema.sql", "to": "db/migrations/038_dashboard_widgets.sql" }
+  ],
+  "providesContract": {
+    "library": "@/lib/dashboardLayout",
+    "exports": ["getDashboardLayout", "setDashboardLayout", "DEFAULT_SECTIONS", "defaultStaticLayout", "DashboardLayout", "GridItem"]
+  },
+  "postInstall": [
+    "1. Run DB migration to create user_widgets, widget_shares, user_widget_layout and user_dashboard_layout",
+    "2. lib/dashboardSections.ts exports DEFAULT_SECTIONS — replace with the keys your home page actually renders (it ships elite-hub's set as a placeholder)",
+    "3. Compose a HomeClient that renders <DashboardGrid layout={...} editing={editingMode} onLayoutChange={save}> with one child per section key",
+    "4. Provide an Edit toggle that flips `editing` — the CSS reveals the cyan corner/edge handles only while the root has .dashboard-editing"
+  ]
+}

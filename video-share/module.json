@@ -1,0 +1,46 @@
+{
+  "name": "video-share",
+  "version": "0.1.0",
+  "description": "Drop-in 'share to feed / story / DM' modal. Accepts a ShareSource (gallery item, external mediaUrl, or batch) and posts to social-feed, stories-with-ttl, or direct-messaging behind one consistent UI.",
+  "category": "ui",
+  "framework": {
+    "next": ">=14",
+    "react": ">=18"
+  },
+  "dependencies": {
+    "npm": [
+      "lucide-react@^0.451"
+    ],
+    "modules": [
+      "authentication",
+      "social-feed",
+      "stories-with-ttl",
+      "direct-messaging",
+      "user-profiles"
+    ]
+  },
+  "files": [
+    { "from": "components/ShareTargetModal.tsx", "to": "src/components/ShareTargetModal.tsx" },
+    { "from": "components/Avatar.tsx", "to": "src/components/Avatar.tsx", "optional": true }
+  ],
+  "providesContract": {
+    "library": "@/components/ShareTargetModal",
+    "exports": ["default", "ShareSource", "ShareSourceKind"],
+    "description": "Default export is the modal component. ShareSource is the polymorphic source descriptor (gallery item via galleryItemId, or external mediaUrl + mediaType + previewUrl)."
+  },
+  "requiresContract": {
+    "endpoints": {
+      "/api/feed": "POST { content?, mediaUrl?, mediaType?, sourceRef? } — provided by social-feed module",
+      "/api/stories": "POST { mediaUrl, mediaType, sourceRef? } — provided by stories-with-ttl module",
+      "/api/dms": "POST { recipient_id, content?, mediaUrl?, mediaType? } — provided by direct-messaging module",
+      "/api/channels": "GET — provided by channel-management module (optional; gracefully degrades to empty list)",
+      "/api/users": "GET — provided by user-profiles module"
+    }
+  },
+  "postInstall": [
+    "1. Make sure social-feed, stories-with-ttl and direct-messaging modules are installed (and channel-management if you want channel-posting)",
+    "2. The modal expects an Avatar component at @/components/Avatar — included as an optional file; replace with your own if you have one",
+    "3. Drop the modal into any feature that wants 'share to feed': pass open + source + onClose + onShared"
+  ],
+  "exampleUsage": "import ShareTargetModal, { type ShareSource } from '@/components/ShareTargetModal';\\n\\nconst [shareSource, setShareSource] = useState<ShareSource | null>(null);\\n// In a clip card button onClick:\\nsetShareSource({ kind: 'external', mediaUrl: `/api/clips/${slug}/video`, mediaType: 'video/mp4', previewUrl: `/api/clips/${slug}/poster` });\\n// At the bottom of the page:\\n<ShareTargetModal open={!!shareSource} source={shareSource} onClose={() => setShareSource(null)} onShared={() => setShareSource(null)} />"
+}

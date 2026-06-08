@@ -3,7 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![Next.js](https://img.shields.io/badge/Next.js-14-black?logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Modules](https://img.shields.io/badge/modules-57-violet)](./registry.json)
+[![Modules](https://img.shields.io/badge/modules-60-violet)](./registry.json)
 [![GitHub stars](https://img.shields.io/github/stars/tjelite1986/modules?style=flat&logo=github)](https://github.com/tjelite1986/modules/stargazers)
 [![Last commit](https://img.shields.io/github/last-commit/tjelite1986/modules)](https://github.com/tjelite1986/modules/commits/main)
 
@@ -26,7 +26,7 @@ Reusable feature packages and patterns for Next.js projects. Built for personal 
 - [Changelog](./CHANGELOG.md)
 - [License](#license)
 
-> **57 modules + 2 templates** at the time of writing. Everything is plain TypeScript, Next.js 14 App Router, Drizzle or raw `better-sqlite3`, NextAuth or hand-rolled JWT, Tailwind. No build step — copy files and go.
+> **60 modules + 2 templates** at the time of writing (one — `tiktok-mirror` — is deprecated and folded into `clips-library`). Everything is plain TypeScript, Next.js 14 App Router, Drizzle or raw `better-sqlite3`, NextAuth or hand-rolled JWT, Tailwind. No build step — copy files and go.
 
 ## Requirements
 

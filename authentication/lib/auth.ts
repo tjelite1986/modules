@@ -23,6 +23,10 @@ export function verifyToken(req: NextRequest): TokenPayload | null {
   const authHeader = req.headers.get('Authorization');
   if (!authHeader?.startsWith('Bearer ')) return null;
   const token = authHeader.slice(7);
+  return verifyTokenString(token);
+}
+
+function verifyTokenString(token: string): TokenPayload | null {
   try {
     const payload = jwt.verify(token, JWT_SECRET) as TokenPayload;
     if (payload.jti) {
@@ -37,6 +41,17 @@ export function verifyToken(req: NextRequest): TokenPayload | null {
   } catch {
     return null;
   }
+}
+
+// Same as verifyToken but also accepts a `?t=<jwt>` query parameter. Used
+// for asset routes that browsers fetch via plain <img>/<video> tags where
+// custom Authorization headers cannot be set.
+export function verifyTokenLoose(req: NextRequest): TokenPayload | null {
+  const fromHeader = verifyToken(req);
+  if (fromHeader) return fromHeader;
+  const t = req.nextUrl.searchParams.get('t');
+  if (!t) return null;
+  return verifyTokenString(t);
 }
 
 export function signToken(payload: Omit<TokenPayload, 'jti'>): string {

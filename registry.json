@@ -7,10 +7,10 @@
     {
       "name": "authentication",
       "path": "authentication",
-      "description": "JWT-based login/register with invite codes, admin accounts, session tracking, and DB-backed brute-force lockout",
+      "description": "JWT-based login/register with invite codes, admin accounts, session tracking, DB-backed brute-force lockout, and verifyTokenLoose for ?t= query-token auth on asset routes",
       "category": "auth",
       "tags": ["jwt", "bcrypt", "sqlite", "invite-codes", "foundation", "rate-limit"],
-      "version": "0.2.0",
+      "version": "0.2.1",
       "status": "stable"
     },
     {
@@ -384,6 +384,33 @@
       "description": "Google-Photos-style library: timeline, albums, smart albums, map view, auto-trip detection, year-in-review, tag browser, share links, EXIF + geotag, content-hash dedup",
       "category": "media",
       "tags": ["gallery", "photos", "albums", "exif", "geotag", "leaflet", "smart-albums"],
+      "version": "0.1.0",
+      "status": "stable"
+    },
+    {
+      "name": "dashboard-widgets",
+      "path": "dashboard-widgets",
+      "description": "Free-form per-user dashboard: drag, resize from 8 directions, vertical compaction, three breakpoints. Storage + API + DashboardGrid wrapper around react-grid-layout. Does not include integration widgets.",
+      "category": "ui",
+      "tags": ["dashboard", "drag-and-drop", "resize", "react-grid-layout", "widgets", "layout"],
+      "version": "0.1.0",
+      "status": "stable"
+    },
+    {
+      "name": "video-share",
+      "path": "video-share",
+      "description": "Drop-in 'share to feed / story / DM' modal. One UI over social-feed + stories-with-ttl + direct-messaging.",
+      "category": "ui",
+      "tags": ["share", "feed", "stories", "dm", "modal", "social"],
+      "version": "0.1.0",
+      "status": "stable"
+    },
+    {
+      "name": "bookshelf",
+      "path": "bookshelf",
+      "description": "Shared bookshelf with EPUB / PDF / CBZ reader, per-user reading-position sync, and FS-driven catalogue scan. Uses poppler-utils for PDF covers and verifyTokenLoose for ?t= asset auth.",
+      "category": "media",
+      "tags": ["books", "epub", "pdf", "cbz", "reader", "reading-state"],
       "version": "0.1.0",
       "status": "stable"
     },

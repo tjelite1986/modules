@@ -1,7 +1,7 @@
 {
   "name": "authentication",
-  "version": "0.2.0",
-  "description": "JWT-based login/register with invite codes, admin accounts, session tracking, and DB-backed brute-force lockout on the login endpoint",
+  "version": "0.2.1",
+  "description": "JWT-based login/register with invite codes, admin accounts, session tracking, DB-backed brute-force lockout, and verifyTokenLoose for ?t= query-token auth on asset routes",
   "category": "auth",
   "framework": {
     "next": ">=14",
@@ -63,7 +63,7 @@
   ],
   "providesContract": {
     "library": "@/lib/auth",
-    "exports": ["verifyToken", "verifyAdmin", "signToken", "extractJti"]
+    "exports": ["verifyToken", "verifyTokenLoose", "verifyAdmin", "signToken", "extractJti"]
   },
   "providesContractRateLimit": {
     "library": "@/lib/loginRateLimit",

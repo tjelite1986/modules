@@ -80,6 +80,7 @@ export function upsertClipProfile(input: {
       throw new Error("videos_limit must be an integer in [1, 1000]");
     }
   }
+  if (input.sourceUrl) assertSafeUrl(input.sourceUrl);
   const db = getDb();
   // SQLite enforces NOT NULL during the INSERT branch of UPSERT even when
   // ON CONFLICT will redirect to UPDATE, so we cannot pass NULL for
@@ -145,6 +146,27 @@ interface YtdlpProfileResult {
 
 export const DEFAULT_PROFILE_VIDEOS_LIMIT = 30;
 
+// Allow only http/https URLs into yt-dlp, and never let a URL be confused
+// for a flag (no leading "-"). source_url is admin-only but the entries
+// returned by yt-dlp itself are upstream-controlled.
+function assertSafeUrl(u: string): string {
+  if (!u || u.startsWith("-")) throw new Error("Refusing yt-dlp URL starting with '-'");
+  let parsed: URL;
+  try { parsed = new URL(u); } catch { throw new Error("Invalid yt-dlp URL"); }
+  if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+    throw new Error(`Refusing yt-dlp URL with protocol ${parsed.protocol}`);
+  }
+  return u;
+}
+
+// Video IDs become filesystem basenames + .md/.mp4/.jpg sidecars. yt-dlp
+// normally returns clean IDs but upstream feeds are not trusted.
+const SAFE_VIDEO_ID = /^[A-Za-z0-9._-]{1,64}$/;
+function assertSafeVideoId(id: string): string {
+  if (!SAFE_VIDEO_ID.test(id)) throw new Error(`Unsafe video id: ${id}`);
+  return id;
+}
+
 function runYtdlp(args: string[], timeoutMs = 120_000): Promise<{ stdout: string; stderr: string; code: number }> {
   return new Promise((resolve) => {
     const proc = spawn("yt-dlp", args, { stdio: ["ignore", "pipe", "pipe"] });
@@ -169,7 +191,8 @@ export async function fetchProfileEntries(
     "--dump-single-json",
     "--playlist-end", String(limit),
     "--no-warnings",
-    profileUrl,
+    "--",
+    assertSafeUrl(profileUrl),
   ], 180_000);
   if (code !== 0) throw new Error("yt-dlp failed to resolve profile");
   const data = JSON.parse(stdout) as {
@@ -189,7 +212,8 @@ export async function fetchVideoMeta(videoUrl: string): Promise<YtdlpEntry> {
   const { stdout, code } = await runYtdlp([
     "--dump-single-json",
     "--no-warnings",
-    videoUrl,
+    "--",
+    assertSafeUrl(videoUrl),
   ], 60_000);
   if (code !== 0) throw new Error("yt-dlp failed to resolve video");
   return JSON.parse(stdout) as YtdlpEntry;
@@ -201,6 +225,7 @@ async function downloadVideoToProfile(
   profile: string,
   basename: string,
 ): Promise<{ videoFile: string; thumbFile: string | null }> {
+  assertSafeVideoId(basename);
   const dir = path.join(CLIPS_ROOT, profile);
   fs.mkdirSync(dir, { recursive: true });
   const out = path.join(dir, `${basename}.%(ext)s`);
@@ -210,7 +235,8 @@ async function downloadVideoToProfile(
     "--convert-thumbnails", "jpg",
     "--no-warnings",
     "-o", out,
-    videoUrl,
+    "--",
+    assertSafeUrl(videoUrl),
   ], 300_000);
   if (code !== 0) throw new Error("yt-dlp failed to download video");
   const videoFile = ["mp4", "webm", "mov", "m4v"]
@@ -282,6 +308,8 @@ export async function downloadSingleVideo(
   videoId: string,
 ): Promise<{ videoId: string; videoFile: string }> {
   if (!getClipProfile(profile)) throw new Error("Unknown profile");
+  assertSafeUrl(videoUrl);
+  assertSafeVideoId(videoId);
   const fullEntry = await fetchVideoMeta(videoUrl).catch(
     () => ({ id: videoId, webpage_url: videoUrl } as YtdlpEntry),
   );
@@ -326,6 +354,10 @@ export async function syncClipProfile(name: string): Promise<{
   for (const entry of data.entries) {
     if (inWindow >= limit) break;
     const videoId = String(entry.id);
+    if (!SAFE_VIDEO_ID.test(videoId)) {
+      errors.push({ videoId, error: "unsafe id" });
+      continue;
+    }
     if (existing.has(videoId)) { inWindow++; skipped++; continue; }
     if (userSkipped.has(videoId)) { skipped++; continue; }
     const videoUrl =

@@ -1,0 +1,93 @@
+/* react-grid-layout dashboard overrides */
+.react-grid-placeholder {
+  background: rgba(34, 211, 238, 0.15) !important;
+  border: 2px dashed rgba(34, 211, 238, 0.5) !important;
+  border-radius: 0.75rem !important;
+  opacity: 1 !important;
+  transition: transform 120ms ease;
+}
+.react-grid-item.react-grid-placeholder { box-shadow: none; }
+.react-grid-item.react-draggable-dragging { z-index: 50 !important; }
+
+/* Reset react-resizable's default rotated SVG-triangle icons so we can draw
+   our own handles from scratch. The base class is what carries the SVG
+   background and the corner padding. */
+.react-grid-item > .react-resizable-handle {
+  background: none !important;
+  background-image: none !important;
+  padding: 0 !important;
+  transform: none !important;
+  border: 0 !important;
+  margin: 0 !important;
+}
+.react-grid-item > .react-resizable-handle::after { display: none !important; }
+
+/* Handles are hidden in view mode and visible only when editing. */
+.react-grid-item > .react-resizable-handle { opacity: 0; pointer-events: none; }
+.dashboard-editing .react-grid-item > .react-resizable-handle {
+  opacity: 1;
+  pointer-events: auto;
+  z-index: 6;
+}
+
+/* Corner handles — small cyan squares. */
+.dashboard-editing .react-grid-item > .react-resizable-handle-se,
+.dashboard-editing .react-grid-item > .react-resizable-handle-sw,
+.dashboard-editing .react-grid-item > .react-resizable-handle-ne,
+.dashboard-editing .react-grid-item > .react-resizable-handle-nw {
+  width: 14px !important;
+  height: 14px !important;
+  background: rgba(34, 211, 238, 0.9) !important;
+  border: 1px solid rgba(15, 23, 42, 0.8) !important;
+  border-radius: 4px !important;
+}
+.dashboard-editing .react-grid-item > .react-resizable-handle-se {
+  bottom: 2px !important; right: 2px !important; left: auto !important; top: auto !important;
+  cursor: se-resize !important;
+}
+.dashboard-editing .react-grid-item > .react-resizable-handle-sw {
+  bottom: 2px !important; left: 2px !important; right: auto !important; top: auto !important;
+  cursor: sw-resize !important;
+}
+.dashboard-editing .react-grid-item > .react-resizable-handle-ne {
+  top: 2px !important; right: 2px !important; bottom: auto !important; left: auto !important;
+  cursor: ne-resize !important;
+}
+.dashboard-editing .react-grid-item > .react-resizable-handle-nw {
+  top: 2px !important; left: 2px !important; bottom: auto !important; right: auto !important;
+  cursor: nw-resize !important;
+}
+
+/* Edge handles — thin cyan sticks centered on each side. */
+.dashboard-editing .react-grid-item > .react-resizable-handle-e,
+.dashboard-editing .react-grid-item > .react-resizable-handle-w {
+  width: 6px !important;
+  height: 36px !important;
+  top: 50% !important;
+  margin-top: -18px !important;
+  background: rgba(34, 211, 238, 0.7) !important;
+  border-radius: 3px !important;
+  bottom: auto !important;
+}
+.dashboard-editing .react-grid-item > .react-resizable-handle-e {
+  right: 0 !important; left: auto !important; cursor: e-resize !important;
+}
+.dashboard-editing .react-grid-item > .react-resizable-handle-w {
+  left: 0 !important; right: auto !important; cursor: w-resize !important;
+}
+.dashboard-editing .react-grid-item > .react-resizable-handle-n,
+.dashboard-editing .react-grid-item > .react-resizable-handle-s {
+  height: 6px !important;
+  width: 36px !important;
+  left: 50% !important;
+  margin-left: -18px !important;
+  background: rgba(34, 211, 238, 0.7) !important;
+  border-radius: 3px !important;
+  right: auto !important;
+}
+.dashboard-editing .react-grid-item > .react-resizable-handle-s {
+  bottom: 0 !important; top: auto !important; cursor: s-resize !important;
+}
+.dashboard-editing .react-grid-item > .react-resizable-handle-n {
+  top: 0 !important; bottom: auto !important; cursor: n-resize !important;
+}
