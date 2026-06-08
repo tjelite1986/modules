@@ -1,7 +1,7 @@
 {
   "name": "clips-library",
-  "version": "0.1.1",
-  "description": "Per-profile short-video library with posters, comments, view/like counters, transcode-status tracking, and a unified clip_profiles model that supersedes tiktok-mirror.",
+  "version": "0.2.0",
+  "description": "Per-profile short-video library with posters, comments, view/like counters, transcode-status tracking, and a unified clip_profiles model with yt-dlp auto-poll, per-profile videos_limit and sticky skip-list. Supersedes tiktok-mirror.",
   "supersedes": "tiktok-mirror",
   "category": "media",
   "framework": {
@@ -11,7 +11,11 @@
   "dependencies": {
     "npm": [
       "better-sqlite3@^9",
-      "lucide-react@^0.451"
+      "lucide-react@^0.451",
+      "gray-matter@^4"
+    ],
+    "system": [
+      "yt-dlp"
     ],
     "modules": ["authentication", "video-player-toolkit"]
   },
@@ -20,6 +24,7 @@
     { "from": "lib/clipComments.ts", "to": "src/lib/clipComments.ts" },
     { "from": "lib/clipStats.ts", "to": "src/lib/clipStats.ts" },
     { "from": "lib/clipSlugs.ts", "to": "src/lib/clipSlugs.ts" },
+    { "from": "lib/clipsSync.ts", "to": "src/lib/clipsSync.ts" },
     { "from": "components/", "to": "src/app/videos/clips/" },
     { "from": "api/", "to": "src/app/api/clips/" },
     { "from": "db/schema.sql", "to": "db/migrations/014_clips.sql" }
@@ -27,10 +32,17 @@
   "envVars": [
     { "name": "CLIPS_ROOT", "description": "Host directory containing per-profile subfolders with .mp4/.web.mp4 files", "required": true, "example": "/store/clips" }
   ],
+  "requiresContract": {
+    "library": "@/lib/useAuthUser",
+    "exports": ["useAuthUser"],
+    "description": "ProfileAdminPanel uses useAuthUser() to gate the admin drawer to admin accounts. Hook signature: returns an object containing isAdmin: boolean. Most auth setups already expose this; if not, wrap your auth state."
+  },
   "postInstall": [
-    "1. Run DB migration to create clip_stats, clip_likes and clip_comments tables",
+    "1. Run DB migration to create clip_likes, clip_views, clip_comments, clip_profiles and clip_profile_skipped tables",
     "2. Mount a host volume at CLIPS_ROOT",
     "3. Files in CLIPS_ROOT/<profile>/<slug>.web.mp4 are auto-discovered",
-    "4. Optional: install the transcoder-pipeline module to auto-convert originals to .web.mp4"
+    "4. Install yt-dlp on the host (or in the container that handles downloads) — only required for auto-poll profiles",
+    "5. Optional: install the transcoder-pipeline module to auto-convert originals to .web.mp4",
+    "6. Optional: schedule a daily cron that POSTs to /api/clips/sync-all to poll every auto_poll=1 profile"
   ]
 }

@@ -13,7 +13,13 @@ All notable changes to the modules library are tracked here. Format loosely foll
 ### Changed
 
 - `authentication` (0.1.0 → **0.2.0**) — added DB-backed brute-force lockout. New `lib/loginRateLimit.ts` exports `checkAllowed` / `recordFailure` / `recordSuccess`, new `login_attempts` table in `db/schema.sql`, login route gated by per-identifier ladder (5/10/20 fails → 5 min / 30 min / 4 h lock). Lock responds 429 with `Retry-After`; success clears the counter; rows scrubbed after 24 h idle. Backported from [elite-hub commit `eca5d23`](https://github.com/tjelite1986/elite-hub/commit/eca5d23).
-- `clips-library` (0.1.0 → **0.1.1**) — documented that it supersedes `tiktok-mirror` via the unified `clip_profiles` table. No source changes yet.
+- `clips-library` (0.1.0 → **0.2.0**) — ported the full unified profile registry from elite-hub:
+  - New tables `clip_profiles` (with `videos_limit`) and `clip_profile_skipped` in `db/schema.sql`
+  - New `lib/clipsSync.ts` with yt-dlp orchestration (`syncClipProfile`, `syncAllAutoPollProfiles`, `downloadSingleVideo`, `markVideoSkipped`, `upsertClipProfile`, …)
+  - New API routes: `/api/clips/profiles`, `/api/clips/profiles/:profile/{sync,download,candidates}`, `/api/clips/sync-all` (all write routes admin-gated)
+  - New admin drawer `components/[profile]/ProfileAdminPanel.tsx`
+  - Adds `gray-matter` npm dep and `yt-dlp` system dep
+  - Backported from [elite-hub migrations 043/045/046 + `src/lib/clipsSync.ts`](https://github.com/tjelite1986/elite-hub)
 
 ## 2026-05-13
 

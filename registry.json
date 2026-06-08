@@ -390,10 +390,10 @@
     {
       "name": "clips-library",
       "path": "clips-library",
-      "description": "Per-profile short-video library with posters, comments, view/like counters, transcode-status tracking, and unified clip_profiles model (supersedes tiktok-mirror)",
+      "description": "Per-profile short-video library with posters, comments, view/like counters, transcode-status tracking, and unified clip_profiles model with yt-dlp auto-poll, videos_limit and sticky skip-list (supersedes tiktok-mirror)",
       "category": "media",
-      "tags": ["video", "clips", "library", "comments", "tiktok"],
-      "version": "0.1.1",
+      "tags": ["video", "clips", "library", "comments", "tiktok", "yt-dlp", "auto-poll"],
+      "version": "0.2.0",
       "status": "stable"
     },
     {
