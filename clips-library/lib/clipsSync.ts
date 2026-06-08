@@ -208,6 +208,41 @@ export async function fetchProfileEntries(
   };
 }
 
+// Picks the best human-readable handle from a yt-dlp metadata dump. Tries to
+// parse "/@handle" out of uploader_url / channel_url first (TikTok puts the
+// numeric internal id in uploader_id while /@... is the canonical slug;
+// YouTube /@channelname is also canonical). Falls back to uploader_id /
+// uploader / channel, sorted so safe-ASCII handles win over names with
+// spaces and purely numeric ids end up last.
+export function pickUploaderHandle(fields: {
+  uploader_id?: string | null;
+  uploader?: string | null;
+  channel?: string | null;
+  uploader_url?: string | null;
+  channel_url?: string | null;
+}): string | null {
+  const candidates: string[] = [];
+  for (const u of [fields.uploader_url, fields.channel_url]) {
+    if (!u) continue;
+    const m = u.match(/\/@([^/?#]+)/);
+    if (m && m[1]) candidates.push(m[1]);
+  }
+  for (const f of [fields.uploader_id, fields.uploader, fields.channel]) {
+    if (f) candidates.push(f);
+  }
+  const cleaned = candidates
+    .map((s) => s.trim().replace(/^@/, ""))
+    .filter((s) => s && isValidProfile(s));
+  if (cleaned.length === 0) return null;
+  const score = (s: string) => {
+    if (/^\d+$/.test(s)) return 0;
+    if (/^[A-Za-z0-9_.-]+$/.test(s)) return 2;
+    return 1;
+  };
+  cleaned.sort((a, b) => score(b) - score(a));
+  return cleaned[0];
+}
+
 export async function fetchVideoMeta(videoUrl: string): Promise<YtdlpEntry> {
   const { stdout, code } = await runYtdlp([
     "--dump-single-json",
@@ -262,6 +297,10 @@ function writeClipMd(profile: string, basename: string, entry: YtdlpEntry) {
   if (entry.webpage_url || entry.url) data.url = entry.webpage_url ?? entry.url;
   if (entry.upload_date) data.upload_date = entry.upload_date;
   if (typeof entry.duration === "number") data.duration = entry.duration;
+  const tags = (entry as { tags?: unknown }).tags;
+  if (Array.isArray(tags) && tags.length > 0) {
+    data.tags = tags.filter((t): t is string => typeof t === "string");
+  }
   const content = matter.stringify("", data);
   fs.writeFileSync(mdPath, content, "utf-8");
 }
@@ -302,17 +341,22 @@ export function unmarkVideoSkipped(profile: string, videoId: string): void {
 
 // Download one specific video into a profile (used by the manual-pick UI).
 // Writes the .md frontmatter and clears any skip entry for the same id.
+// Pass `cachedEntry` when the caller already resolved metadata so we don't
+// hit yt-dlp twice (and don't silently fall back to an empty stub if the
+// second call hiccups).
 export async function downloadSingleVideo(
   profile: string,
   videoUrl: string,
   videoId: string,
+  cachedEntry?: YtdlpEntry,
 ): Promise<{ videoId: string; videoFile: string }> {
   if (!getClipProfile(profile)) throw new Error("Unknown profile");
   assertSafeUrl(videoUrl);
   assertSafeVideoId(videoId);
-  const fullEntry = await fetchVideoMeta(videoUrl).catch(
-    () => ({ id: videoId, webpage_url: videoUrl } as YtdlpEntry),
-  );
+  const fullEntry = cachedEntry
+    ?? (await fetchVideoMeta(videoUrl).catch(
+      () => ({ id: videoId, webpage_url: videoUrl } as YtdlpEntry),
+    ));
   const { videoFile } = await downloadVideoToProfile(videoUrl, profile, videoId);
   writeClipMd(profile, videoId, fullEntry);
   unmarkVideoSkipped(profile, videoId);

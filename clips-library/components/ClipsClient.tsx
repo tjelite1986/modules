@@ -34,6 +34,7 @@ import {
 } from "lucide-react";
 import Avatar from "@/components/Avatar";
 import { encodeSlugForUrl } from "@/lib/clipSlugs";
+import ProfilesAdminButtons from "./ProfilesAdminButtons";
 
 export interface ProfileCard {
   profile: string;
@@ -1603,52 +1604,56 @@ function ProfilesView({
     return profiles.filter((p) => p.profile.toLowerCase().includes(q));
   }, [profiles, query]);
 
-  if (profiles.length === 0) {
-    const folder =
-      library === "shorts18"
-        ? "/mnt/4tb/elite/shorts18"
-        : "/mnt/4tb/elite/shortvideos";
-    return (
-      <div className="flex-1 overflow-y-auto bg-dark-bg pt-16 px-4 md:px-6 pb-6">
-        <div className="max-w-2xl mx-auto text-center py-12 space-y-3">
-          <div className="w-16 h-16 mx-auto rounded-2xl bg-dark-card border border-dark-border flex items-center justify-center text-gray-400">
-            <Users size={28} />
-          </div>
-          <p className="text-sm font-medium text-gray-300">No profiles yet</p>
-          <p className="text-xs text-gray-500">
-            Create a folder under{" "}
-            <code className="bg-dark-card2 px-1.5 py-0.5 rounded text-gray-400 text-[11px]">
-              {folder}
-            </code>{" "}
-            and drop video files in it.
-          </p>
-        </div>
-      </div>
-    );
-  }
+  const folder =
+    library === "shorts18"
+      ? "/mnt/4tb/elite/shorts18"
+      : "/mnt/4tb/elite/shortvideos";
 
   return (
     <div className="flex-1 overflow-y-auto bg-dark-bg pt-16 px-4 md:px-6 pb-6">
       <div className="max-w-5xl mx-auto space-y-4">
-        <div className="relative">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" aria-hidden="true" />
-          <input
-            type="search"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search profiles..."
-            aria-label="Search profiles"
-            className="w-full bg-dark-input border border-dark-border rounded-lg pl-9 pr-3 py-2 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-blue-500/50"
-          />
-        </div>
-        {filtered.length === 0 ? (
-          <p className="text-sm text-gray-500 text-center py-12">Nothing matches</p>
-        ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-            {filtered.map((p) => (
-              <ProfileTile key={p.profile} card={p} library={library} />
-            ))}
+        {library === "clips" && <ProfilesAdminButtons />}
+        {profiles.length === 0 ? (
+          <div className="text-center py-12 space-y-3">
+            <div className="w-16 h-16 mx-auto rounded-2xl bg-dark-card border border-dark-border flex items-center justify-center text-gray-400">
+              <Users size={28} />
+            </div>
+            <p className="text-sm font-medium text-gray-300">No profiles yet</p>
+            <p className="text-xs text-gray-500">
+              {library === "clips" ? (
+                <>Use the buttons above, or create a folder under{" "}</>
+              ) : (
+                <>Create a folder under{" "}</>
+              )}
+              <code className="bg-dark-card2 px-1.5 py-0.5 rounded text-gray-400 text-[11px]">
+                {folder}
+              </code>{" "}
+              and drop video files in it.
+            </p>
           </div>
+        ) : (
+          <>
+            <div className="relative">
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" aria-hidden="true" />
+              <input
+                type="search"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search profiles..."
+                aria-label="Search profiles"
+                className="w-full bg-dark-input border border-dark-border rounded-lg pl-9 pr-3 py-2 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-blue-500/50"
+              />
+            </div>
+            {filtered.length === 0 ? (
+              <p className="text-sm text-gray-500 text-center py-12">Nothing matches</p>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                {filtered.map((p) => (
+                  <ProfileTile key={p.profile} card={p} library={library} />
+                ))}
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

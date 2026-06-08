@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import ClipsClient, { type ClipSummary } from "../ClipsClient";
 import { listClips, listProfiles, isValidProfile } from "@/lib/clips";
+import { getClipProfile } from "@/lib/clipsSync";
 import { getAllClipStats } from "@/lib/clipStats";
 import { getCommentCounts } from "@/lib/clipComments";
 
@@ -14,8 +15,11 @@ export default async function ClipsProfilePage({ params }: Props) {
   const profile = decodeURIComponent(params.profile);
   if (!isValidProfile(profile)) notFound();
 
+  // Accept either a profile that has clips on disk OR one that is registered
+  // in clip_profiles but hasn't synced yet — otherwise newly-created profiles
+  // 404 until the first video lands.
   const profiles = listProfiles();
-  if (!profiles.includes(profile)) notFound();
+  if (!profiles.includes(profile) && !getClipProfile(profile)) notFound();
 
   const stats = getAllClipStats();
   const commentCounts = getCommentCounts();

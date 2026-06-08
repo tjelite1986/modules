@@ -1,7 +1,7 @@
 {
   "name": "clips-library",
-  "version": "0.2.0",
-  "description": "Per-profile short-video library with posters, comments, view/like counters, transcode-status tracking, and a unified clip_profiles model with yt-dlp auto-poll, per-profile videos_limit and sticky skip-list. Supersedes tiktok-mirror.",
+  "version": "0.3.0",
+  "description": "Per-profile short-video library with posters, comments, view/like counters, transcode-status tracking, a unified clip_profiles model with yt-dlp auto-poll, per-profile videos_limit + sticky skip-list, and URL-only admin flows for creating profiles or pulling single videos. Supersedes tiktok-mirror.",
   "supersedes": "tiktok-mirror",
   "category": "media",
   "framework": {
