@@ -26,6 +26,29 @@ On lockout the route responds `429` with a `Retry-After` header. A successful lo
 
 The identifier is lowercased before hashing into the table, so `Alice` and `alice` share a bucket — that matches how the user lookup works (email is lowercased; usernames are case-sensitive but a brute-forcer doesn't know that).
 
+## `verifyTokenLoose` — known tradeoff
+
+`verifyTokenLoose(req)` accepts the JWT either in the `Authorization` header OR in a `?t=<jwt>` query parameter. It exists because browsers can't set custom headers on plain `<img src>`, `<video src>`, `<embed src>`, `<iframe src>`, or `<a download href>`, and asset routes (`bookshelf` covers/files, photo-gallery thumbnails, etc.) need *some* way to authenticate those requests.
+
+**The tradeoff:** putting a bearer JWT in a URL means it can leak via:
+
+- HTTP access logs (web server, reverse proxy, CDN)
+- Browser history and tab-restore state
+- The `Referer` header on any outbound request the rendered asset triggers (especially an EPUB or PDF that contains external links)
+- Intermediate proxy caches
+
+In this module's threat model — small self-hosted apps behind a single Traefik reverse proxy, single user-base, HTTPS-only — this is an accepted risk. The token is the same long-lived (30 day) JWT the rest of the API uses, so a leaked URL is roughly equivalent to a stolen session.
+
+**If you need a tighter bound**, replace `verifyTokenLoose` with a short-lived asset-scoped capability token:
+
+1. Add an endpoint `POST /api/<resource>/:id/asset-token` that takes the bearer JWT in the `Authorization` header
+2. Have it return `jwt.sign({ sub: user.id, res: 'book:<slug>/file', exp: now + 300 }, ASSET_SECRET)`
+3. In the asset route, verify the scoped token and check `payload.res === expectedResource` and `payload.exp`
+4. Set `Referrer-Policy: no-referrer` on asset responses to suppress the `Referer` leak from rendered content
+5. Configure your access-log scrubbers to strip the `t` query param
+
+This is a real improvement but a non-trivial refactor — each asset route gains a one-RTT prelude and the client has to manage the asset-token lifecycle. Consider it for production deployments that face untrusted networks or share an environment with logging infrastructure you don't control.
+
 ## Installation
 
 ### 1. Install npm deps
