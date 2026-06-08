@@ -1,5 +1,5 @@
 -- Authentication module schema
--- Users, invite codes, and sessions tables
+-- Users, invite codes, sessions, and brute-force lockout tables
 
 CREATE TABLE IF NOT EXISTS users (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -30,3 +30,17 @@ CREATE TABLE IF NOT EXISTS sessions (
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   last_seen DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Brute-force throttle for the login endpoint.
+-- Keyed on lowercased identifier (email or username) so each account has its
+-- own counter. Rows older than 24h are scrubbed on read.
+CREATE TABLE IF NOT EXISTS login_attempts (
+  identifier        TEXT PRIMARY KEY,
+  failed_count      INTEGER NOT NULL DEFAULT 0,
+  locked_until      INTEGER,
+  first_failed_at   INTEGER NOT NULL,
+  last_attempt_at   INTEGER NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_login_attempts_last
+  ON login_attempts(last_attempt_at);

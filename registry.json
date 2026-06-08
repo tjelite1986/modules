@@ -7,10 +7,10 @@
     {
       "name": "authentication",
       "path": "authentication",
-      "description": "JWT-based login/register with invite codes, admin accounts, and session tracking",
+      "description": "JWT-based login/register with invite codes, admin accounts, session tracking, and DB-backed brute-force lockout",
       "category": "auth",
-      "tags": ["jwt", "bcrypt", "sqlite", "invite-codes", "foundation"],
-      "version": "0.1.0",
+      "tags": ["jwt", "bcrypt", "sqlite", "invite-codes", "foundation", "rate-limit"],
+      "version": "0.2.0",
       "status": "stable"
     },
     {
@@ -390,20 +390,20 @@
     {
       "name": "clips-library",
       "path": "clips-library",
-      "description": "Per-profile short-video library with posters, comments, view/like counters and transcode-status tracking",
+      "description": "Per-profile short-video library with posters, comments, view/like counters, transcode-status tracking, and unified clip_profiles model (supersedes tiktok-mirror)",
       "category": "media",
-      "tags": ["video", "clips", "library", "comments"],
-      "version": "0.1.0",
+      "tags": ["video", "clips", "library", "comments", "tiktok"],
+      "version": "0.1.1",
       "status": "stable"
     },
     {
       "name": "tiktok-mirror",
       "path": "tiktok-mirror",
-      "description": "Self-hosted TikTok mirror with daily metadata polling and lazy video download via yt-dlp",
+      "description": "[DEPRECATED — use clips-library] Self-hosted TikTok mirror with daily metadata polling and lazy video download via yt-dlp",
       "category": "media",
-      "tags": ["tiktok", "yt-dlp", "mirror", "cron"],
-      "version": "0.1.0",
-      "status": "stable"
+      "tags": ["tiktok", "yt-dlp", "mirror", "cron", "deprecated"],
+      "version": "0.2.0",
+      "status": "deprecated"
     },
     {
       "name": "web-push-vapid",

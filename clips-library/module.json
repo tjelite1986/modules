@@ -1,7 +1,8 @@
 {
   "name": "clips-library",
-  "version": "0.1.0",
-  "description": "Per-profile short-video library with posters, comments, view/like counters and transcode-status tracking. Supports orphan .web.mp4 files and waits-for-transcode marker files.",
+  "version": "0.1.1",
+  "description": "Per-profile short-video library with posters, comments, view/like counters, transcode-status tracking, and a unified clip_profiles model that supersedes tiktok-mirror.",
+  "supersedes": "tiktok-mirror",
   "category": "media",
   "framework": {
     "next": ">=14",

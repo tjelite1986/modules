@@ -19,6 +19,16 @@ A per-profile short-video library that reads from the filesystem and tracks enga
 - "Orphan `.web.mp4`" pattern: original is deleted after successful transcode, the library treats the remaining web-optimised file as the clip
 - Title/description/uploader/tags read from optional `<slug>.md` sidecar (front-matter)
 
+## Supersedes `tiktok-mirror`
+
+Earlier versions of this set shipped a separate `tiktok-mirror` module. That module is now **deprecated**: the TikTok use-case is folded into `clips-library` via a `clip_profiles` table that drives:
+
+- `auto_poll` — whether a daily cron should refresh metadata for the profile
+- `videos_limit` — cap per-profile clip count, oldest evicted first
+- A sticky per-profile **skip list** so manually-removed clips don't reappear on next poll
+
+The yt-dlp polling, lazy-download and comments/stats schema all live here. If you're starting fresh, install `clips-library` only; if you're upgrading from `tiktok-mirror`, migrate the `tiktok_*` tables into `clip_profiles` and point the cron at the unified endpoint.
+
 ## Install
 
 ```bash

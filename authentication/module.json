@@ -1,7 +1,7 @@
 {
   "name": "authentication",
-  "version": "0.1.0",
-  "description": "JWT-based login/register with invite codes, admin accounts, and session tracking",
+  "version": "0.2.0",
+  "description": "JWT-based login/register with invite codes, admin accounts, session tracking, and DB-backed brute-force lockout on the login endpoint",
   "category": "auth",
   "framework": {
     "next": ">=14",
@@ -25,6 +25,10 @@
     {
       "from": "lib/auth.ts",
       "to": "src/lib/auth.ts"
+    },
+    {
+      "from": "lib/loginRateLimit.ts",
+      "to": "src/lib/loginRateLimit.ts"
     },
     {
       "from": "api/login/route.ts",
@@ -60,6 +64,10 @@
   "providesContract": {
     "library": "@/lib/auth",
     "exports": ["verifyToken", "verifyAdmin", "signToken", "extractJti"]
+  },
+  "providesContractRateLimit": {
+    "library": "@/lib/loginRateLimit",
+    "exports": ["checkAllowed", "recordFailure", "recordSuccess"]
   },
   "requiresContract": {
     "library": "@/lib/db",

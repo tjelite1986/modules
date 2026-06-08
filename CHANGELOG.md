@@ -4,6 +4,17 @@ All notable changes to the modules library are tracked here. Format loosely foll
 
 ## [Unreleased]
 
+## 2026-06-08
+
+### Deprecated
+
+- `tiktok-mirror` (0.1.0 → **0.2.0, deprecated**) — superseded by `clips-library`. The TikTok stack has been folded into the unified `clip_profiles` model (auto-poll, per-profile videos limit, sticky skip-list). Module folder kept for reference; will be removed in a future release.
+
+### Changed
+
+- `authentication` (0.1.0 → **0.2.0**) — added DB-backed brute-force lockout. New `lib/loginRateLimit.ts` exports `checkAllowed` / `recordFailure` / `recordSuccess`, new `login_attempts` table in `db/schema.sql`, login route gated by per-identifier ladder (5/10/20 fails → 5 min / 30 min / 4 h lock). Lock responds 429 with `Retry-After`; success clears the counter; rows scrubbed after 24 h idle. Backported from [elite-hub commit `eca5d23`](https://github.com/tjelite1986/elite-hub/commit/eca5d23).
+- `clips-library` (0.1.0 → **0.1.1**) — documented that it supersedes `tiktok-mirror` via the unified `clip_profiles` table. No source changes yet.
+
 ## 2026-05-13
 
 ### Added

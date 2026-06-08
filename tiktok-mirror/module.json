@@ -1,8 +1,10 @@
 {
   "name": "tiktok-mirror",
-  "version": "0.1.0",
-  "description": "Self-hosted TikTok mirror: follow profiles, cache metadata daily, lazy-download videos on first watch. Uses yt-dlp under the hood.",
+  "version": "0.2.0",
+  "description": "[DEPRECATED — use clips-library] Self-hosted TikTok mirror: follow profiles, cache metadata daily, lazy-download videos on first watch.",
   "category": "media",
+  "deprecated": true,
+  "supersededBy": "clips-library",
   "framework": {
     "next": ">=14",
     "react": ">=18"

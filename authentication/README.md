@@ -1,14 +1,30 @@
 # authentication
 
-JWT-based login/register with invite codes, admin accounts, and session tracking. Backend in Next.js App Router, storage in SQLite via `better-sqlite3`.
+JWT-based login/register with invite codes, admin accounts, session tracking, and DB-backed brute-force lockout. Backend in Next.js App Router, storage in SQLite via `better-sqlite3`.
 
 ## What's included
 
 - `lib/auth.ts` — `verifyToken`, `verifyAdmin`, `signToken`, `extractJti`
-- `api/login/route.ts` — POST `/api/auth/login` (identifier can be username or email)
+- `lib/loginRateLimit.ts` — `checkAllowed`, `recordFailure`, `recordSuccess` (per-identifier brute-force lockout)
+- `api/login/route.ts` — POST `/api/auth/login` (identifier can be username or email; rate-limited)
 - `api/register/route.ts` — POST `/api/auth/register` (requires invite code)
 - `pages/login/page.tsx`, `pages/register/page.tsx` — ready-made UI pages (Tailwind, dark theme — feel free to restyle)
-- `db/schema.sql` — `users`, `invite_codes`, `sessions`
+- `db/schema.sql` — `users`, `invite_codes`, `sessions`, `login_attempts`
+
+## Brute-force lockout
+
+The login route is gated by `lib/loginRateLimit.ts`, which keeps a per-identifier counter in the `login_attempts` table. The ladder is:
+
+| Failed attempts | Lock duration |
+|---|---|
+| 1–4 | none (response is still `401`, so an attacker cannot tell rate-limit from wrong-password until the 5th try) |
+| 5 | 5 min |
+| 10 | 30 min |
+| 20 | 4 h |
+
+On lockout the route responds `429` with a `Retry-After` header. A successful login clears the counter. Rows are scrubbed after 24 h of inactivity.
+
+The identifier is lowercased before hashing into the table, so `Alice` and `alice` share a bucket — that matches how the user lookup works (email is lowercased; usernames are case-sensitive but a brute-forcer doesn't know that).
 
 ## Installation
 

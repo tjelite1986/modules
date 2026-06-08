@@ -1,5 +1,11 @@
 # tiktok-mirror
 
+> **Deprecated as of 0.2.0 — superseded by [`clips-library`](../clips-library/).**
+>
+> The TikTok-specific stack has been folded into `clips-library` via the new `clip_profiles` table, which drives `auto_poll`, `videos_limit` and a per-profile sticky skip-list. The yt-dlp polling pattern, comments/stats schema and lazy-download flow live there now. No reason to install both side-by-side.
+>
+> Existing installs should migrate to the unified `clip_profiles` model. This folder is kept for reference; it will be removed in a future release.
+
 Follow TikTok profiles and watch them locally. Metadata is polled daily via yt-dlp; videos themselves are lazy-downloaded only when someone hits play.
 
 ## Why lazy download
