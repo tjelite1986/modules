@@ -742,6 +742,32 @@ export default function GalleryClient() {
     }
   };
 
+  const runFilenameDates = async () => {
+    if (
+      !confirm(
+        "Re-date items from dates embedded in their filenames (e.g. IMG-20250720-WA0000.jpg, 20250811_220838.mp4)?\n\nItems whose files carry an EXIF date are left untouched. Originals are moved to the matching yyyy/mm folder.",
+      )
+    )
+      return;
+    const res = await fetch("/api/gallery/backfill-filename-dates", {
+      method: "POST",
+      headers: authHeaders(),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      alert(
+        `Scanned ${data.scanned}, found filename dates on ${data.parsed}.\n` +
+          `Updated ${data.updated} (${data.skipped_match} already correct, ${data.skipped_exif} kept their EXIF date).`,
+      );
+      if (data.updated > 0) {
+        setItems([]);
+        setCursor(null);
+        refreshStats();
+        if (tab === "timeline") loadItems(true);
+      }
+    }
+  };
+
   const runImport = async () => {
     if (importing) return;
     setImporting(true);
@@ -967,6 +993,13 @@ export default function GalleryClient() {
             title="Find duplicate photos by content hash and merge them into Trash"
           >
             Find duplicates
+          </button>
+          <button
+            onClick={runFilenameDates}
+            className="text-gray-500 hover:text-violet-300 underline-offset-2 hover:underline"
+            title="Re-date items from dates embedded in filenames (IMG-20250720-WA0000, 20250811_220838, …) when EXIF has none"
+          >
+            Fix dates from filenames
           </button>
         </div>
       )}

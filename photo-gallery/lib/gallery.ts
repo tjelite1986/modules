@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import { createHash, randomBytes } from "node:crypto";
 import { getDb } from "./db";
+import { parseFilenameDate } from "./filenameDate";
 import {
   detectKind,
   ensureDirs,
@@ -216,10 +217,10 @@ async function readExifGps(
 }
 
 
-async function readExifTakenAt(buffer: Buffer): Promise<Date | null> {
+async function readExifTakenAt(source: Buffer | string): Promise<Date | null> {
   try {
     const exifr = await import("exifr");
-    const data = await exifr.parse(buffer, ["DateTimeOriginal", "CreateDate", "DateTime"]);
+    const data = await exifr.parse(source, ["DateTimeOriginal", "CreateDate", "DateTime"]);
     if (!data) return null;
     const candidate = data.DateTimeOriginal || data.CreateDate || data.DateTime;
     if (candidate instanceof Date && !Number.isNaN(candidate.valueOf())) return candidate;
@@ -249,7 +250,8 @@ export async function ingestUpload(input: IngestInput): Promise<GalleryItem> {
   if (existing) return existing;
 
   const exifDate = kind === "image" ? await readExifTakenAt(input.buffer) : null;
-  const takenAt = exifDate || input.fallbackTakenAt || new Date();
+  const takenAt =
+    exifDate || parseFilenameDate(input.filename) || input.fallbackTakenAt || new Date();
   const gps = kind === "image" ? await readExifGps(input.buffer) : null;
 
   const paths = planIngest(input.userId, input.filename, takenAt);
@@ -334,6 +336,62 @@ export function backfillYearTags(userId: number): { added: number; updated: numb
   });
   tx(items);
   return { added, updated: items.length };
+}
+
+// Re-dates items whose filename encodes a capture date that differs from the
+// stored taken_at. EXIF stays authoritative: items whose original file still
+// carries an EXIF date are left untouched — this only rescues media where
+// taken_at fell back to upload time / file mtime (WhatsApp images, videos,
+// screenshots).
+export async function backfillFilenameDates(userId: number): Promise<{
+  scanned: number;
+  parsed: number;
+  updated: number;
+  skipped_exif: number;
+  skipped_match: number;
+}> {
+  const db = getDb();
+  const items = db
+    .prepare(
+      `SELECT id, filename, storage_key, kind, taken_at
+         FROM gallery_items WHERE user_id = ? AND is_deleted = 0`,
+    )
+    .all(userId) as Pick<GalleryItem, "id" | "filename" | "storage_key" | "kind" | "taken_at">[];
+
+  let parsed = 0;
+  let updated = 0;
+  let skippedExif = 0;
+  let skippedMatch = 0;
+
+  for (const it of items) {
+    const want = parseFilenameDate(it.filename);
+    if (!want) continue;
+    parsed += 1;
+
+    const cur = new Date(it.taken_at);
+    const sameDay =
+      !Number.isNaN(cur.getTime()) &&
+      cur.getUTCFullYear() === want.getUTCFullYear() &&
+      cur.getUTCMonth() === want.getUTCMonth() &&
+      cur.getUTCDate() === want.getUTCDate();
+    if (sameDay) {
+      skippedMatch += 1;
+      continue;
+    }
+
+    if (it.kind === "image") {
+      const orig = originalPath(userId, it.storage_key);
+      if (fs.existsSync(orig) && (await readExifTakenAt(orig))) {
+        skippedExif += 1;
+        continue;
+      }
+    }
+
+    if (setTakenAt(userId, it.id, want.toISOString())) updated += 1;
+  }
+
+  if (updated > 0) backfillYearTags(userId);
+  return { scanned: items.length, parsed, updated, skipped_exif: skippedExif, skipped_match: skippedMatch };
 }
 
 export interface ListOptions {

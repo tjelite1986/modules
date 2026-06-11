@@ -1,6 +1,6 @@
 {
   "name": "photo-gallery",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "Google-Photos-style library: timeline, albums, smart albums, map view, auto-trip detection, year-in-review, tag browser, share links, EXIF + geotag, content-hash dedup",
   "category": "media",
   "framework": {
@@ -24,6 +24,7 @@
   },
   "files": [
     { "from": "lib/gallery.ts", "to": "src/lib/gallery.ts" },
+    { "from": "lib/filenameDate.ts", "to": "src/lib/filenameDate.ts" },
     { "from": "lib/galleryStorage.ts", "to": "src/lib/galleryStorage.ts" },
     { "from": "lib/gallery-types.ts", "to": "src/app/gallery/types.ts" },
     { "from": "components/", "to": "src/app/gallery/" },
