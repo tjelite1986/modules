@@ -50,6 +50,8 @@ sqlite3 data/app.db < db/migrations/021_gallery.sql
 
 - `authentication` module **>= 0.3.0** — asset routes (thumb/preview/file/download) use `verifyTokenLoose` with media-scoped `?t=` tokens, and the client components build asset URLs with `mediaToken()` from `@/lib/mediaToken`
 - An on-disk file store mounted at `GALLERY_ROOT`
+- `ffmpeg` on the host/container (thumbnails, previews, video probing)
+- `libheif-tools` on the host/container (`heif-convert`) — **required for HEIC/HEIF**: ffmpeg decodes tiled HEIF as a single 512px grid tile (renders as an extreme zoom-in), so ingest converts via libheif first. `POST /api/gallery/repair-heif` regenerates thumbs/previews/dimensions for items ingested before this fix
 
 ## Provides
 

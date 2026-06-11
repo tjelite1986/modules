@@ -6,6 +6,8 @@ import {
   detectKind,
   ensureDirs,
   ffprobeMedia,
+  heifToJpeg,
+  isHeifPath,
   makeImageThumb,
   makeVideoThumb,
   moveOriginalByDate,
@@ -257,23 +259,38 @@ export async function ingestUpload(input: IngestInput): Promise<GalleryItem> {
   const paths = planIngest(input.userId, input.filename, takenAt);
   fs.writeFileSync(paths.originalPath, input.buffer);
 
+  // ffprobe/ffmpeg can't decode tiled HEIF correctly (they see one 512px
+  // grid tile), so convert once via libheif and derive probe + thumbnails
+  // from the JPEG.
+  const heifJpeg =
+    kind === "image" && isHeifPath(paths.originalPath)
+      ? await heifToJpeg(paths.originalPath)
+      : null;
+  const mediaSrc = heifJpeg ?? paths.originalPath;
+
   let width: number | undefined;
   let height: number | undefined;
   let durationMs: number | undefined;
   try {
-    const probed = await ffprobeMedia(paths.originalPath);
+    const probed = await ffprobeMedia(mediaSrc);
     width = probed.width;
     height = probed.height;
     durationMs = probed.durationMs;
   } catch {}
 
   const thumbOk = kind === "image"
-    ? await makeImageThumb(paths.originalPath, paths.thumbPath, THUMB_MAX, THUMB_QUALITY)
+    ? await makeImageThumb(mediaSrc, paths.thumbPath, THUMB_MAX, THUMB_QUALITY)
     : await makeVideoThumb(paths.originalPath, paths.thumbPath, THUMB_MAX, THUMB_QUALITY);
 
   const previewOk = kind === "image"
-    ? await makeImageThumb(paths.originalPath, paths.previewPath, PREVIEW_MAX, PREVIEW_QUALITY)
+    ? await makeImageThumb(mediaSrc, paths.previewPath, PREVIEW_MAX, PREVIEW_QUALITY)
     : await makeVideoThumb(paths.originalPath, paths.previewPath, PREVIEW_MAX, PREVIEW_QUALITY);
+
+  if (heifJpeg) {
+    try {
+      fs.unlinkSync(heifJpeg);
+    } catch {}
+  }
 
   const db = getDb();
   const result = db
@@ -675,6 +692,74 @@ export async function rotateItem(
     "UPDATE gallery_items SET width = ?, height = ?, size_bytes = ? WHERE id = ? AND user_id = ?",
   ).run(result.width ?? null, result.height ?? null, stat.size, id, userId);
   return getItem(userId, id);
+}
+
+// Regenerates thumbnails/previews and stored dimensions for HEIF/HEIC items.
+// Items ingested before the libheif-first fix have a single 512px grid tile
+// as their thumb/preview (looks extremely zoomed in) and tile dimensions in
+// the DB.
+export async function repairHeifMedia(userId: number): Promise<{
+  scanned: number;
+  repaired: number;
+  errors: number;
+}> {
+  const db = getDb();
+  const items = db
+    .prepare(
+      `SELECT id, storage_key FROM gallery_items
+        WHERE user_id = ? AND kind = 'image' AND is_deleted = 0
+          AND (lower(storage_key) LIKE '%.heif' OR lower(storage_key) LIKE '%.heic'
+               OR lower(storage_key) LIKE '%.heifs' OR lower(storage_key) LIKE '%.heics')`,
+    )
+    .all(userId) as { id: number; storage_key: string }[];
+
+  let repaired = 0;
+  let errors = 0;
+  for (const it of items) {
+    const orig = originalPath(userId, it.storage_key);
+    if (!fs.existsSync(orig)) {
+      errors += 1;
+      continue;
+    }
+    const jpeg = await heifToJpeg(orig);
+    if (!jpeg) {
+      errors += 1;
+      continue;
+    }
+    try {
+      const probed = await ffprobeMedia(jpeg);
+      const thumbOk = await makeImageThumb(
+        jpeg,
+        thumbPath(userId, it.storage_key),
+        THUMB_MAX,
+        THUMB_QUALITY,
+      );
+      const previewOk = await makeImageThumb(
+        jpeg,
+        previewPath(userId, it.storage_key),
+        PREVIEW_MAX,
+        PREVIEW_QUALITY,
+      );
+      db.prepare(
+        `UPDATE gallery_items SET width = ?, height = ?,
+           thumbnail_ready = ?, preview_ready = ? WHERE id = ? AND user_id = ?`,
+      ).run(
+        probed.width ?? null,
+        probed.height ?? null,
+        thumbOk ? 1 : 0,
+        previewOk ? 1 : 0,
+        it.id,
+        userId,
+      );
+      if (thumbOk && previewOk) repaired += 1;
+      else errors += 1;
+    } finally {
+      try {
+        fs.unlinkSync(jpeg);
+      } catch {}
+    }
+  }
+  return { scanned: items.length, repaired, errors };
 }
 
 export function setTakenAt(

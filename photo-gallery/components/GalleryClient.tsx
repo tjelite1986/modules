@@ -768,6 +768,33 @@ export default function GalleryClient() {
     }
   };
 
+  const runRepairHeif = async () => {
+    if (
+      !confirm(
+        "Regenerate thumbnails, previews and dimensions for all HEIF/HEIC photos?\n\nFixes photos that show as a single extremely zoomed-in tile. May take a while — each photo is re-converted.",
+      )
+    )
+      return;
+    const res = await fetch("/api/gallery/repair-heif", {
+      method: "POST",
+      headers: authHeaders(),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      alert(
+        `Scanned ${data.scanned} HEIF photo${data.scanned === 1 ? "" : "s"}, repaired ${data.repaired}${
+          data.errors ? `, ${data.errors} errors` : ""
+        }.`,
+      );
+      if (data.repaired > 0) {
+        setItems([]);
+        setCursor(null);
+        refreshStats();
+        if (tab === "timeline") loadItems(true);
+      }
+    }
+  };
+
   const runImport = async () => {
     if (importing) return;
     setImporting(true);
@@ -1000,6 +1027,13 @@ export default function GalleryClient() {
             title="Re-date items from dates embedded in filenames (IMG-20250720-WA0000, 20250811_220838, …) when EXIF has none"
           >
             Fix dates from filenames
+          </button>
+          <button
+            onClick={runRepairHeif}
+            className="text-gray-500 hover:text-violet-300 underline-offset-2 hover:underline"
+            title="Regenerate thumbnails, previews and dimensions for HEIF/HEIC photos that decoded as a single zoomed-in tile"
+          >
+            Repair HEIF previews
           </button>
         </div>
       )}

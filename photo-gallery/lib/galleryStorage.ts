@@ -183,7 +183,7 @@ async function runFfmpeg(args: string[]): Promise<boolean> {
 
 const HEIF_EXTS = new Set([".heic", ".heif", ".heics", ".heifs"]);
 
-async function heifToJpeg(src: string): Promise<string | null> {
+export async function heifToJpeg(src: string): Promise<string | null> {
   const tmp = path.join(os.tmpdir(), `heif-${randomUUID()}.jpg`);
   const ok = await runCmd("heif-convert", ["-q", "92", src, tmp]);
   if (ok && fs.existsSync(tmp)) return tmp;
@@ -215,17 +215,20 @@ async function ffmpegImageScale(
   ]);
 }
 
-export async function makeImageThumb(src: string, dst: string, maxSide: number, quality: number) {
-  const ok = await ffmpegImageScale(src, dst, maxSide, quality);
-  if (ok && fs.existsSync(dst)) return true;
+export function isHeifPath(file: string): boolean {
+  return HEIF_EXTS.has(path.extname(file).toLowerCase());
+}
 
-  const ext = path.extname(src).toLowerCase();
-  if (HEIF_EXTS.has(ext)) {
+export async function makeImageThumb(src: string, dst: string, maxSide: number, quality: number) {
+  // HEIF must go through libheif first: ffmpeg "succeeds" on tiled HEIC/HEIF
+  // by decoding a single 512x512 grid tile, which renders as an extremely
+  // zoomed-in crop. Only fall back to direct ffmpeg if conversion fails.
+  if (isHeifPath(src)) {
     const tmp = await heifToJpeg(src);
     if (tmp) {
       try {
-        const ok2 = await ffmpegImageScale(tmp, dst, maxSide, quality);
-        if (ok2 && fs.existsSync(dst)) return true;
+        const ok = await ffmpegImageScale(tmp, dst, maxSide, quality);
+        if (ok && fs.existsSync(dst)) return true;
       } finally {
         try {
           fs.unlinkSync(tmp);
@@ -233,7 +236,9 @@ export async function makeImageThumb(src: string, dst: string, maxSide: number, 
       }
     }
   }
-  return false;
+
+  const ok = await ffmpegImageScale(src, dst, maxSide, quality);
+  return ok && fs.existsSync(dst);
 }
 
 export async function rotateImageInPlace(
