@@ -1,4 +1,5 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { verifyTokenLoose } from "@/lib/auth";
 import { posterFilePath, posterMime, decodeSlugFromUrl } from "@/lib/clips";
 import fs from "node:fs";
 
@@ -8,7 +9,8 @@ interface Props {
   params: { slug: string };
 }
 
-export async function GET(_req: Request, { params }: Props) {
+export async function GET(req: NextRequest, { params }: Props) {
+  if (!verifyTokenLoose(req)) return new Response("Unauthorized", { status: 401 });
   const slug = decodeSlugFromUrl(decodeURIComponent(params.slug));
   const found = posterFilePath(slug);
   if (!found) return NextResponse.json({ error: "Not found" }, { status: 404 });

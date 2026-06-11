@@ -6,6 +6,10 @@ All notable changes to the modules library are tracked here. Format loosely foll
 
 ## 2026-06-11
 
+### Security
+
+- `clips-library` (0.3.0 → **0.4.0**) — the list, video and poster routes previously had **no authentication**: the whole video library was fetchable by anyone who could reach the server. The list route now requires a session token (`verifyToken`) and video/poster accept the media-scoped `?t=` token (`verifyTokenLoose`); `ClipsClient` appends `mediaToken()` to playback, card and prefetch URLs while share URLs stay token-free. Requires `authentication >= 0.3.0`. Backported from elite-hub.
+
 ### Changed
 
 - `authentication` (0.2.1 → **0.3.0**) — `?t=` query auth on asset routes now requires a short-lived (24 h) media-scoped capability token instead of the full session JWT. New `signMediaToken` server export, new `GET /api/auth/media-token` route, and new client helper `lib/mediaToken.ts` (`mediaToken` / `ensureMediaToken` / `clearMediaToken`, localStorage-cached with background refresh). `verifyTokenLoose` rejects session JWTs in query strings, regular header auth rejects media tokens, and media tokens inherit the parent session `jti` so logout revokes them. Closes the JWT-in-URL tradeoff documented in 0.2.1. Backported from [elite-hub commit `311efa2`](https://github.com/tjelite1986/elite-hub/commit/311efa2).

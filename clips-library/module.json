@@ -1,6 +1,6 @@
 {
   "name": "clips-library",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Per-profile short-video library with posters, comments, view/like counters, transcode-status tracking, a unified clip_profiles model with yt-dlp auto-poll, per-profile videos_limit + sticky skip-list, and URL-only admin flows for creating profiles or pulling single videos. Supersedes tiktok-mirror.",
   "supersedes": "tiktok-mirror",
   "category": "media",
@@ -36,6 +36,11 @@
     "library": "@/lib/useAuthUser",
     "exports": ["useAuthUser"],
     "description": "ProfileAdminPanel uses useAuthUser() to gate the admin drawer to admin accounts. Hook signature: returns an object containing isAdmin: boolean. Most auth setups already expose this; if not, wrap your auth state."
+  },
+  "requiresContractAuth": {
+    "library": "@/lib/auth",
+    "exports": ["verifyToken", "verifyTokenLoose"],
+    "description": "Since 0.4.0 the list route requires a session token and video/poster routes require a media-scoped ?t= token via verifyTokenLoose. ClipsClient builds playback URLs with mediaToken() from @/lib/mediaToken. Requires authentication module >= 0.3.0."
   },
   "postInstall": [
     "1. Run DB migration to create clip_likes, clip_views, clip_comments, clip_profiles and clip_profile_skipped tables",

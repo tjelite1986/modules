@@ -1,4 +1,5 @@
 import { NextRequest } from "next/server";
+import { verifyTokenLoose } from "@/lib/auth";
 import { findClip, videoFilePath, videoMime, decodeSlugFromUrl } from "@/lib/clips";
 import fs from "node:fs";
 
@@ -9,6 +10,7 @@ interface Props {
 }
 
 export async function GET(req: NextRequest, { params }: Props) {
+  if (!verifyTokenLoose(req)) return new Response("Unauthorized", { status: 401 });
   const slug = decodeSlugFromUrl(decodeURIComponent(params.slug));
   const clip = findClip(slug);
   if (!clip) return new Response("Not found", { status: 404 });

@@ -34,6 +34,7 @@ import {
 } from "lucide-react";
 import Avatar from "@/components/Avatar";
 import { encodeSlugForUrl } from "@/lib/clipSlugs";
+import { mediaToken } from "@/lib/mediaToken";
 import ProfilesAdminButtons from "./ProfilesAdminButtons";
 
 export interface ProfileCard {
@@ -89,6 +90,18 @@ function apiUrlFor(
     return `/api/tiktok/${encodeURIComponent(videoId)}/${endpoint}`;
   }
   return `/api/${source}/${urlSlug(clip.slug)}/${endpoint}`;
+}
+
+// Playback/render URL for <video>/<img> tags: mtime cache-buster + media
+// token (the routes require auth and plain tags can't set headers). Share
+// URLs stored elsewhere must stay token-free.
+function mediaSrcFor(
+  clip: ClipSummary,
+  libraryDefault: "clips" | "shorts18",
+  endpoint: "video" | "poster",
+  mtime: number,
+): string {
+  return `${apiUrlFor(clip, libraryDefault, endpoint)}?v=${Math.floor(mtime)}&t=${encodeURIComponent(mediaToken())}`;
 }
 
 function urlSlug(slug: string): string {
@@ -744,7 +757,7 @@ function FeedView({
     const link = document.createElement("link");
     link.rel = "prefetch";
     link.as = "video";
-    link.href = `${apiUrlFor(next, library, "video")}?v=${Math.floor(next.videoMtime)}`;
+    link.href = mediaSrcFor(next, library, "video", next.videoMtime);
     document.head.appendChild(link);
     return () => {
       link.remove();
@@ -883,9 +896,9 @@ function FeedItem({
     return () => obs.disconnect();
   }, [index, onActiveChange]);
 
-  const videoSrc = `${apiUrlFor(clip, library, "video")}?v=${Math.floor(clip.videoMtime)}`;
+  const videoSrc = mediaSrcFor(clip, library, "video", clip.videoMtime);
   const poster = clip.hasPoster
-    ? `${apiUrlFor(clip, library, "poster")}?v=${Math.floor(clip.posterMtime)}`
+    ? mediaSrcFor(clip, library, "poster", clip.posterMtime)
     : undefined;
   const distance = Math.abs(activeIndex - index);
   const inWindow = distance <= 1;
@@ -1463,9 +1476,9 @@ function GridCard({
   state: ClipState;
 }) {
   const poster = clip.hasPoster
-    ? `${apiUrlFor(clip, library, "poster")}?v=${Math.floor(clip.posterMtime)}`
+    ? mediaSrcFor(clip, library, "poster", clip.posterMtime)
     : null;
-  const video = `${apiUrlFor(clip, library, "video")}?v=${Math.floor(clip.videoMtime)}`;
+  const video = mediaSrcFor(clip, library, "video", clip.videoMtime);
   const longPressTimer = useRef<number | null>(null);
   const longPressFired = useRef(false);
 
@@ -1669,10 +1682,10 @@ function ProfileTile({
 }) {
   const poster =
     card.sampleSlug && card.sampleHasPoster
-      ? `/api/${library}/${urlSlug(card.sampleSlug)}/poster?v=${Math.floor(card.samplePosterMtime)}`
+      ? `/api/${library}/${urlSlug(card.sampleSlug)}/poster?v=${Math.floor(card.samplePosterMtime)}&t=${encodeURIComponent(mediaToken())}`
       : null;
   const fallbackVideo = card.sampleSlug
-    ? `/api/${library}/${urlSlug(card.sampleSlug)}/video?v=${Math.floor(card.sampleVideoMtime)}#t=0.1`
+    ? `/api/${library}/${urlSlug(card.sampleSlug)}/video?v=${Math.floor(card.sampleVideoMtime)}&t=${encodeURIComponent(mediaToken())}#t=0.1`
     : null;
   const [catOpen, setCatOpen] = useState(false);
   const [catBusy, setCatBusy] = useState(false);

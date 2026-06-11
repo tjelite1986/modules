@@ -420,7 +420,7 @@
       "description": "Per-profile short-video library with posters, comments, view/like counters, transcode-status tracking, and unified clip_profiles model with yt-dlp auto-poll, videos_limit and sticky skip-list (supersedes tiktok-mirror)",
       "category": "media",
       "tags": ["video", "clips", "library", "comments", "tiktok", "yt-dlp", "auto-poll"],
-      "version": "0.2.0",
+      "version": "0.4.0",
       "status": "stable"
     },
     {

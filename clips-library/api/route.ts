@@ -1,9 +1,11 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { verifyToken } from "@/lib/auth";
 import { listClips } from "@/lib/clips";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  if (!verifyToken(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const clips = listClips().map((c) => ({
     slug: c.slug,
     profile: c.profile,
