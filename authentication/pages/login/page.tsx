@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ensureMediaToken } from '@/lib/mediaToken';
@@ -10,6 +10,27 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // Sessions created before the auth cookie existed have a valid bearer
+  // token in localStorage but no cookie, so middleware bounces them here.
+  // Re-mint the cookie and send them back in.
+  useEffect(() => {
+    const token = localStorage.getItem('auth_token');
+    if (!token) return;
+    fetch('/api/auth/cookie', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(async (res) => {
+        if (res.ok) {
+          await ensureMediaToken();
+          router.replace('/');
+        } else {
+          localStorage.removeItem('auth_token');
+        }
+      })
+      .catch(() => {});
+  }, [router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -8,6 +8,7 @@ All notable changes to the modules library are tracked here. Format loosely foll
 
 ### Security
 
+- `authentication` (0.3.0 → **0.4.0**) — server-rendered pages are now gated: the login route mirrors the session JWT as an httpOnly cookie, and a new `middleware.ts` (jose, edge-safe) redirects unauthenticated page requests to `/login`. Without this, server components leak their data in HTML/RSC to anyone — localStorage bearer tokens are invisible during SSR. API routes keep header auth; `PUBLIC_PAGES` + matcher are per-project config. Pre-cookie sessions self-heal via `POST /api/auth/cookie`. Adds `jose` dependency. Backported from elite-hub.
 - `clips-library` (0.3.0 → **0.4.0**) — the list, video and poster routes previously had **no authentication**: the whole video library was fetchable by anyone who could reach the server. The list route now requires a session token (`verifyToken`) and video/poster accept the media-scoped `?t=` token (`verifyTokenLoose`); `ClipsClient` appends `mediaToken()` to playback, card and prefetch URLs while share URLs stay token-free. Requires `authentication >= 0.3.0`. Backported from elite-hub.
 
 ### Changed

@@ -10,6 +10,7 @@ JWT-based login/register with invite codes, admin accounts, session tracking, an
 - `api/login/route.ts` — POST `/api/auth/login` (identifier can be username or email; rate-limited)
 - `api/register/route.ts` — POST `/api/auth/register` (requires invite code)
 - `api/media-token/route.ts` — GET `/api/auth/media-token` (issues the scoped media token)
+- `lib/authCookie.ts` + `api/cookie/route.ts` + `middleware.ts` — httpOnly-cookie mirror of the session JWT and an edge middleware that gates server-rendered pages
 - `pages/login/page.tsx`, `pages/register/page.tsx` — ready-made UI pages (Tailwind, dark theme — feel free to restyle)
 - `db/schema.sql` — `users`, `invite_codes`, `sessions`, `login_attempts`
 
@@ -44,6 +45,16 @@ Flow:
 `lib/mediaToken.ts` handles the client lifecycle: `mediaToken()` is a synchronous accessor for URL builders (localStorage-cached, background refresh), `ensureMediaToken()` awaits a fresh token (call it after login and on app load), `clearMediaToken()` belongs in your logout path.
 
 Hardening tips for hostile environments: set `Referrer-Policy: no-referrer` on asset responses and strip the `t` query param in access-log scrubbers.
+
+## Page gating — why the cookie exists
+
+Bearer tokens in `localStorage` are invisible to the server, so any **server component** renders its data into HTML/RSC for unauthenticated visitors too — client-side redirects in a dashboard shell only hide it after delivery. Since 0.4.0 the login route mirrors the JWT as an `httpOnly` cookie (`lib/authCookie.ts`), and `middleware.ts` verifies it with `jose` (edge-safe) and redirects anonymous page requests to `/login`.
+
+- API routes are excluded by the matcher — they keep header/media-token auth
+- `PUBLIC_PAGES` lists routes that must stay anonymous (`/login`, `/register`, share pages); adjust per project, along with the asset exclusions in the matcher
+- Middleware checks signature + expiry only; DB-backed session revocation still happens in the API layer
+- Sessions created before the cookie existed self-heal: the login page POSTs the stored bearer token to `/api/auth/cookie` and bounces back
+- Logout clears the cookie
 
 ## Installation
 

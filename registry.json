@@ -7,10 +7,10 @@
     {
       "name": "authentication",
       "path": "authentication",
-      "description": "JWT-based login/register with invite codes, admin accounts, session tracking, DB-backed brute-force lockout, and short-lived media-scoped capability tokens for ?t= query auth on asset routes",
+      "description": "JWT-based login/register with invite codes, admin accounts, session tracking, DB-backed brute-force lockout, media-scoped capability tokens for ?t= query auth, and httpOnly-cookie + edge middleware gating of server-rendered pages",
       "category": "auth",
       "tags": ["jwt", "bcrypt", "sqlite", "invite-codes", "foundation", "rate-limit"],
-      "version": "0.3.0",
+      "version": "0.4.0",
       "status": "stable"
     },
     {

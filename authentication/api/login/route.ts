@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { getDb } from '@/lib/db';
 import { signToken } from '@/lib/auth';
+import { setAuthCookie } from '@/lib/authCookie';
 import { checkAllowed, recordFailure, recordSuccess } from '@/lib/loginRateLimit';
 
 export async function POST(req: NextRequest) {
@@ -44,5 +45,7 @@ export async function POST(req: NextRequest) {
     }
   } catch {}
 
-  return NextResponse.json({ token, user: { id: user.id, username: user.username } });
+  const res = NextResponse.json({ token, user: { id: user.id, username: user.username } });
+  setAuthCookie(res, token, req);
+  return res;
 }
