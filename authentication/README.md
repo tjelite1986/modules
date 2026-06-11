@@ -4,10 +4,12 @@ JWT-based login/register with invite codes, admin accounts, session tracking, an
 
 ## What's included
 
-- `lib/auth.ts` — `verifyToken`, `verifyAdmin`, `signToken`, `extractJti`
+- `lib/auth.ts` — `verifyToken`, `verifyTokenLoose`, `verifyAdmin`, `signToken`, `signMediaToken`, `extractJti`
+- `lib/mediaToken.ts` — client-side cache/refresh for the media token used in `?t=` asset URLs
 - `lib/loginRateLimit.ts` — `checkAllowed`, `recordFailure`, `recordSuccess` (per-identifier brute-force lockout)
 - `api/login/route.ts` — POST `/api/auth/login` (identifier can be username or email; rate-limited)
 - `api/register/route.ts` — POST `/api/auth/register` (requires invite code)
+- `api/media-token/route.ts` — GET `/api/auth/media-token` (issues the scoped media token)
 - `pages/login/page.tsx`, `pages/register/page.tsx` — ready-made UI pages (Tailwind, dark theme — feel free to restyle)
 - `db/schema.sql` — `users`, `invite_codes`, `sessions`, `login_attempts`
 
@@ -26,28 +28,22 @@ On lockout the route responds `429` with a `Retry-After` header. A successful lo
 
 The identifier is lowercased before hashing into the table, so `Alice` and `alice` share a bucket — that matches how the user lookup works (email is lowercased; usernames are case-sensitive but a brute-forcer doesn't know that).
 
-## `verifyTokenLoose` — known tradeoff
+## Media tokens — query-string auth for asset routes
 
-`verifyTokenLoose(req)` accepts the JWT either in the `Authorization` header OR in a `?t=<jwt>` query parameter. It exists because browsers can't set custom headers on plain `<img src>`, `<video src>`, `<embed src>`, `<iframe src>`, or `<a download href>`, and asset routes (`bookshelf` covers/files, photo-gallery thumbnails, etc.) need *some* way to authenticate those requests.
+Browsers can't set custom headers on plain `<img src>`, `<video src>`, `<embed src>`, `<iframe src>`, or `<a download href>`, so asset routes (`bookshelf` covers/files, `photo-gallery` thumbnails, etc.) authenticate via a `?t=<token>` query parameter instead.
 
-**The tradeoff:** putting a bearer JWT in a URL means it can leak via:
+Since 0.3.0 that parameter only accepts a **media token**: a short-lived (24 h) JWT signed with `scope: 'media'`. The full session JWT is rejected in query strings, and media tokens are rejected by `verifyToken`/`verifyAdmin`, so a token leaked through access logs, browser history, `Referer` headers, or proxy caches cannot be replayed against the regular API and expires within a day. The media token inherits the parent session's `jti`, so logging out revokes it immediately.
 
-- HTTP access logs (web server, reverse proxy, CDN)
-- Browser history and tab-restore state
-- The `Referer` header on any outbound request the rendered asset triggers (especially an EPUB or PDF that contains external links)
-- Intermediate proxy caches
+Flow:
 
-In this module's threat model — small self-hosted apps behind a single Traefik reverse proxy, single user-base, HTTPS-only — this is an accepted risk. The token is the same long-lived (30 day) JWT the rest of the API uses, so a leaked URL is roughly equivalent to a stolen session.
+1. Client calls `GET /api/auth/media-token` with the session JWT in the `Authorization` header
+2. The route returns `{ token }` — a 24 h `scope: 'media'` JWT
+3. Client embeds it in asset URLs: `<img src="/api/.../thumb/key?t=<mediaToken>">`
+4. Asset routes call `verifyTokenLoose(req)`, which accepts header auth (session) or `?t=` (media scope only)
 
-**If you need a tighter bound**, replace `verifyTokenLoose` with a short-lived asset-scoped capability token:
+`lib/mediaToken.ts` handles the client lifecycle: `mediaToken()` is a synchronous accessor for URL builders (localStorage-cached, background refresh), `ensureMediaToken()` awaits a fresh token (call it after login and on app load), `clearMediaToken()` belongs in your logout path.
 
-1. Add an endpoint `POST /api/<resource>/:id/asset-token` that takes the bearer JWT in the `Authorization` header
-2. Have it return `jwt.sign({ sub: user.id, res: 'book:<slug>/file', exp: now + 300 }, ASSET_SECRET)`
-3. In the asset route, verify the scoped token and check `payload.res === expectedResource` and `payload.exp`
-4. Set `Referrer-Policy: no-referrer` on asset responses to suppress the `Referer` leak from rendered content
-5. Configure your access-log scrubbers to strip the `t` query param
-
-This is a real improvement but a non-trivial refactor — each asset route gains a one-RTT prelude and the client has to manage the asset-token lifecycle. Consider it for production deployments that face untrusted networks or share an environment with logging infrastructure you don't control.
+Hardening tips for hostile environments: set `Referrer-Policy: no-referrer` on asset responses and strip the `t` query param in access-log scrubbers.
 
 ## Installation
 

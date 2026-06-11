@@ -1,7 +1,7 @@
 {
   "name": "authentication",
-  "version": "0.2.1",
-  "description": "JWT-based login/register with invite codes, admin accounts, session tracking, DB-backed brute-force lockout, and verifyTokenLoose for ?t= query-token auth on asset routes",
+  "version": "0.3.0",
+  "description": "JWT-based login/register with invite codes, admin accounts, session tracking, DB-backed brute-force lockout, and short-lived media-scoped capability tokens for ?t= query auth on asset routes",
   "category": "auth",
   "framework": {
     "next": ">=14",
@@ -25,6 +25,14 @@
     {
       "from": "lib/auth.ts",
       "to": "src/lib/auth.ts"
+    },
+    {
+      "from": "lib/mediaToken.ts",
+      "to": "src/lib/mediaToken.ts"
+    },
+    {
+      "from": "api/media-token/route.ts",
+      "to": "src/app/api/auth/media-token/route.ts"
     },
     {
       "from": "lib/loginRateLimit.ts",
@@ -63,7 +71,11 @@
   ],
   "providesContract": {
     "library": "@/lib/auth",
-    "exports": ["verifyToken", "verifyTokenLoose", "verifyAdmin", "signToken", "extractJti"]
+    "exports": ["verifyToken", "verifyTokenLoose", "verifyAdmin", "signToken", "signMediaToken", "extractJti"]
+  },
+  "providesContractMediaToken": {
+    "library": "@/lib/mediaToken",
+    "exports": ["mediaToken", "ensureMediaToken", "clearMediaToken"]
   },
   "providesContractRateLimit": {
     "library": "@/lib/loginRateLimit",

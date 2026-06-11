@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowDownAZ, ArrowDownWideNarrow, ArrowLeft, CalendarRange, Check, Loader2, MapPin, Pencil, Search, Tag, Trash2, X } from "lucide-react";
 import type { TagSummary } from "../types";
+import { mediaToken } from "@/lib/mediaToken";
 
 function authToken() {
   if (typeof window === "undefined") return "";
@@ -16,7 +17,7 @@ function authHeaders() {
 
 function tagThumbUrl(t: TagSummary) {
   if (!t.cover_storage_key) return null;
-  return `/api/gallery/thumb/${t.cover_storage_key}?t=${encodeURIComponent(authToken())}`;
+  return `/api/gallery/thumb/${t.cover_storage_key}?t=${encodeURIComponent(mediaToken())}`;
 }
 
 export default function TagsClient() {

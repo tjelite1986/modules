@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { ensureMediaToken } from '@/lib/mediaToken';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -23,6 +24,7 @@ export default function LoginPage() {
     setLoading(false);
     if (!res.ok) { setError(data.error); return; }
     localStorage.setItem('auth_token', data.token);
+    await ensureMediaToken();
     router.replace('/');
   };
 

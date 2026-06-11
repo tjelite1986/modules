@@ -10,7 +10,7 @@ A shared bookshelf with a built-in EPUB / PDF / CBZ reader and per-user reading-
 - `api/books/route.ts` — `GET` list, `POST` upload + auto-extract cover (admin only)
 - `api/books/scan/route.ts` — `POST` rescan `BOOKS_ROOT` (admin only)
 - `api/books/[slug]/route.ts` — `GET` metadata + per-user state, `DELETE` (admin only)
-- `api/books/[slug]/cover/route.ts` — `GET` cover PNG, `verifyTokenLoose` so `<img src="…?t=jwt">` works
+- `api/books/[slug]/cover/route.ts` — `GET` cover PNG, `verifyTokenLoose` so `<img src="…?t=<mediaToken>">` works
 - `api/books/[slug]/file/route.ts` — `GET` book file, `verifyTokenLoose` for `<embed>/<iframe>/<a download>`
 - `api/books/[slug]/state/route.ts` — `GET`/`PUT` reading position + percent + `finished_at`
 - `pages/page.tsx` — `/books` listing with cover grid, in-progress / unread / finished tabs
@@ -77,7 +77,7 @@ Then set `BOOKS_ROOT` and `BOOK_COVERS_DIR` in `.env`, mount the former as a hos
 
 ## Requires
 
-- `authentication` module **>= 0.2.1** — needs `verifyTokenLoose` for cover/file routes
+- `authentication` module **>= 0.3.0** — needs `verifyTokenLoose` (media-scope query auth) and the `@/lib/mediaToken` client helper for cover/file routes
 - `poppler-utils` on the host (provides `pdftoppm`)
 - A writable directory for cover thumbnails (separate from `BOOKS_ROOT` so the books volume can stay read-only if you want)
 
@@ -87,15 +87,13 @@ Then set `BOOKS_ROOT` and `BOOK_COVERS_DIR` in `.env`, mount the former as a hos
 - `@/lib/bookStorage` — `BOOKS_ROOT`, `BOOK_COVERS_DIR`, `bookFilePath`, `bookCoverPath`, `detectFormat`, `ensureBookDirs`, `slugify`, `uniqueSlug`
 - `@/lib/bookCovers` — `extractCover`
 
-## Security note: bearer JWT in `?t=` query
+## Security note: media token in `?t=` query
 
-The cover and file routes use `verifyTokenLoose`, which accepts the full session JWT in a `?t=` query parameter so that plain `<img>`, `<embed>`, `<iframe>` and `<a download>` tags can authenticate without setting custom headers. This is the same long-lived (30-day) JWT used for the rest of the API.
+The cover and file routes use `verifyTokenLoose`, which accepts a `?t=` query parameter so that plain `<img>`, `<embed>`, `<iframe>` and `<a download>` tags can authenticate without setting custom headers. Since authentication 0.3.0 this parameter only accepts a short-lived (24 h) media-scoped capability token — the full session JWT is rejected in URLs, and a leaked media token cannot be replayed against the regular API. See the [authentication module](../authentication/README.md) for the token flow; the client pages here use `mediaToken()` from `@/lib/mediaToken` to build asset URLs.
 
-URLs leak — through access logs, browser history, the `Referer` header (especially significant here: EPUB and PDF readers render embedded content that can trigger outbound requests), and intermediate proxies. The book itself is the perfect attack surface for `Referer`-based leakage.
+URLs still leak — through access logs, browser history, the `Referer` header (significant here: EPUB and PDF readers render embedded content that can trigger outbound requests), and intermediate proxies — but the blast radius is now read-only media access for at most 24 h, revoked on logout.
 
-For small self-hosted single-user-base deployments behind a single reverse proxy, this is accepted in the [authentication module](../authentication/README.md). For anything tighter (multi-tenant, untrusted networks, regulated workloads), follow the asset-scoped-capability-token migration path documented there before exposing this module publicly.
-
-At minimum, regardless of deployment, you should set `Referrer-Policy: no-referrer` on cover and file responses so an embedded link inside the rendered book can't leak the token-bearing URL. The current routes do not do this — patch them in your fork if you ship to anyone you don't trust.
+For defense in depth, set `Referrer-Policy: no-referrer` on cover and file responses so an embedded link inside a rendered book can't leak the token-bearing URL. The current routes do not do this — patch them in your fork if you ship to anyone you don't trust.
 
 ## Known gotchas
 

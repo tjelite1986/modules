@@ -48,7 +48,7 @@ sqlite3 data/app.db < db/migrations/021_gallery.sql
 
 ## Requires
 
-- `authentication` module (or any module that exposes `verifyToken(req)` returning a user)
+- `authentication` module **>= 0.3.0** — asset routes (thumb/preview/file/download) use `verifyTokenLoose` with media-scoped `?t=` tokens, and the client components build asset URLs with `mediaToken()` from `@/lib/mediaToken`
 - An on-disk file store mounted at `GALLERY_ROOT`
 
 ## Provides

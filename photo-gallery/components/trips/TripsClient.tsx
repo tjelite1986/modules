@@ -16,6 +16,7 @@ import {
   EyeOff,
   Image as ImageIcon,
 } from "lucide-react";
+import { mediaToken } from "@/lib/mediaToken";
 
 interface Trip {
   id: number;
@@ -48,7 +49,7 @@ function authToken() {
 }
 
 function thumbUrl(storage_key: string) {
-  return `/api/gallery/thumb/${storage_key}?t=${encodeURIComponent(authToken())}`;
+  return `/api/gallery/thumb/${storage_key}?t=${encodeURIComponent(mediaToken())}`;
 }
 
 function fmtDateRange(start: string, end: string) {

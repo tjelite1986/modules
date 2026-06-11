@@ -13,6 +13,7 @@ import {
   Search,
   CheckCircle2,
 } from "lucide-react";
+import { mediaToken } from "@/lib/mediaToken";
 
 interface Book {
   slug: string;
@@ -42,9 +43,8 @@ function authHeaders() {
 
 function withAuth(url: string | null): string {
   if (!url) return "";
-  const tok = typeof window !== "undefined" ? localStorage.getItem("auth_token") ?? "" : "";
   const sep = url.includes("?") ? "&" : "?";
-  return `${url}${sep}t=${encodeURIComponent(tok)}`;
+  return `${url}${sep}t=${encodeURIComponent(mediaToken())}`;
 }
 
 function formatSize(bytes: number | null): string {

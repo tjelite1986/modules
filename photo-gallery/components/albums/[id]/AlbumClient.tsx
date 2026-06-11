@@ -31,6 +31,7 @@ import {
   originalUrl,
 } from "../../GalleryClient";
 import type { AlbumWithCounts, GalleryItem } from "../../types";
+import { mediaToken } from "@/lib/mediaToken";
 
 function authToken() {
   if (typeof window === "undefined") return "";
@@ -481,7 +482,7 @@ export default function AlbumClient({ albumId }: { albumId: number }) {
           <a
             href={`/api/gallery/download?ids=${Array.from(selected).join(
               ",",
-            )}&t=${encodeURIComponent(authToken())}`}
+            )}&t=${encodeURIComponent(mediaToken())}`}
             className="px-2 py-1 rounded bg-emerald-500/20 text-emerald-200 hover:bg-emerald-500/30 flex items-center"
           >
             <Download className="w-4 h-4 inline mr-1" /> Download

@@ -8,6 +8,7 @@ export interface TokenPayload {
   id: number;
   username: string;
   jti?: string;
+  scope?: 'media';
 }
 
 export function verifyAdmin(req: NextRequest): TokenPayload | null {
@@ -26,9 +27,14 @@ export function verifyToken(req: NextRequest): TokenPayload | null {
   return verifyTokenString(token);
 }
 
-function verifyTokenString(token: string): TokenPayload | null {
+function verifyTokenString(token: string, scope: 'session' | 'media' = 'session'): TokenPayload | null {
   try {
     const payload = jwt.verify(token, JWT_SECRET) as TokenPayload;
+    // Media tokens are read-only capability tokens for <img>/<video> URLs.
+    // They must never authenticate regular API calls, and session tokens
+    // must never ride in query strings.
+    const tokenScope = payload.scope === 'media' ? 'media' : 'session';
+    if (tokenScope !== scope) return null;
     if (payload.jti) {
       const { getDb } = require('./db');
       const db = getDb();
@@ -43,20 +49,32 @@ function verifyTokenString(token: string): TokenPayload | null {
   }
 }
 
-// Same as verifyToken but also accepts a `?t=<jwt>` query parameter. Used
-// for asset routes that browsers fetch via plain <img>/<video> tags where
-// custom Authorization headers cannot be set.
+// Accepts JWT from Authorization header OR a scoped media token from a
+// `?t=` query string. Used for resources that browsers fetch via plain
+// <img>/<video> tags, where custom headers cannot be set. The query path
+// only accepts short-lived `scope: media` tokens (see signMediaToken), so
+// a token leaked via logs or Referer cannot be replayed against the API.
 export function verifyTokenLoose(req: NextRequest): TokenPayload | null {
   const fromHeader = verifyToken(req);
   if (fromHeader) return fromHeader;
   const t = req.nextUrl.searchParams.get('t');
   if (!t) return null;
-  return verifyTokenString(t);
+  return verifyTokenString(t, 'media');
 }
 
 export function signToken(payload: Omit<TokenPayload, 'jti'>): string {
   const jti = randomUUID();
   return jwt.sign({ ...payload, jti }, JWT_SECRET, { expiresIn: '30d' });
+}
+
+// Short-lived capability token embedded in media URLs (?t=). Inherits the
+// parent session's jti so logging out revokes outstanding media tokens too.
+export function signMediaToken(user: TokenPayload): string {
+  return jwt.sign(
+    { id: user.id, username: user.username, jti: user.jti, scope: 'media' },
+    JWT_SECRET,
+    { expiresIn: '24h' },
+  );
 }
 
 export function extractJti(req: NextRequest): string | null {

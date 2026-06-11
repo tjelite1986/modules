@@ -7,10 +7,10 @@
     {
       "name": "authentication",
       "path": "authentication",
-      "description": "JWT-based login/register with invite codes, admin accounts, session tracking, DB-backed brute-force lockout, and verifyTokenLoose for ?t= query-token auth on asset routes",
+      "description": "JWT-based login/register with invite codes, admin accounts, session tracking, DB-backed brute-force lockout, and short-lived media-scoped capability tokens for ?t= query auth on asset routes",
       "category": "auth",
       "tags": ["jwt", "bcrypt", "sqlite", "invite-codes", "foundation", "rate-limit"],
-      "version": "0.2.1",
+      "version": "0.3.0",
       "status": "stable"
     },
     {
@@ -384,7 +384,7 @@
       "description": "Google-Photos-style library: timeline, albums, smart albums, map view, auto-trip detection, year-in-review, tag browser, share links, EXIF + geotag, content-hash dedup",
       "category": "media",
       "tags": ["gallery", "photos", "albums", "exif", "geotag", "leaflet", "smart-albums"],
-      "version": "0.1.0",
+      "version": "0.2.0",
       "status": "stable"
     },
     {
@@ -408,10 +408,10 @@
     {
       "name": "bookshelf",
       "path": "bookshelf",
-      "description": "Shared bookshelf with EPUB / PDF / CBZ reader, per-user reading-position sync, and FS-driven catalogue scan. Uses poppler-utils for PDF covers and verifyTokenLoose for ?t= asset auth.",
+      "description": "Shared bookshelf with EPUB / PDF / CBZ reader, per-user reading-position sync, and FS-driven catalogue scan. Uses poppler-utils for PDF covers and media-scoped ?t= tokens for asset auth.",
       "category": "media",
       "tags": ["books", "epub", "pdf", "cbz", "reader", "reading-state"],
-      "version": "0.1.0",
+      "version": "0.2.0",
       "status": "stable"
     },
     {

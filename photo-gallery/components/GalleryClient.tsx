@@ -37,6 +37,7 @@ import {
 import UploadDropzone from "./UploadDropzone";
 import Lightbox from "./Lightbox";
 import ShareTargetModal, { type ShareSource } from "@/components/ShareTargetModal";
+import { mediaToken } from "@/lib/mediaToken";
 import type {
   AlbumWithCounts,
   GalleryItem,
@@ -56,15 +57,15 @@ function authHeaders() {
 }
 
 export function thumbUrl(item: GalleryItem) {
-  return `/api/gallery/thumb/${item.storage_key}?t=${encodeURIComponent(authToken())}`;
+  return `/api/gallery/thumb/${item.storage_key}?t=${encodeURIComponent(mediaToken())}`;
 }
 
 export function previewUrl(item: GalleryItem) {
-  return `/api/gallery/preview/${item.storage_key}?t=${encodeURIComponent(authToken())}`;
+  return `/api/gallery/preview/${item.storage_key}?t=${encodeURIComponent(mediaToken())}`;
 }
 
 export function originalUrl(item: GalleryItem) {
-  return `/api/gallery/file/${item.storage_key}?t=${encodeURIComponent(authToken())}`;
+  return `/api/gallery/file/${item.storage_key}?t=${encodeURIComponent(mediaToken())}`;
 }
 
 function fileUrlForLightbox(item: GalleryItem, variant: "preview" | "file") {
@@ -1241,7 +1242,7 @@ export default function GalleryClient() {
               <a
                 href={`/api/gallery/download?ids=${Array.from(selected).join(
                   ",",
-                )}&t=${encodeURIComponent(authToken())}`}
+                )}&t=${encodeURIComponent(mediaToken())}`}
                 className="px-2 py-1 rounded bg-emerald-500/20 text-emerald-200 hover:bg-emerald-500/30 flex items-center"
               >
                 <Download className="w-4 h-4 inline mr-1" /> Download
@@ -2141,7 +2142,7 @@ function AlbumsTab({
                   {album.cover_storage_key ? (
                     <img
                       src={`/api/gallery/thumb/${album.cover_storage_key}?t=${encodeURIComponent(
-                        authToken(),
+                        mediaToken(),
                       )}`}
                       alt={album.name}
                       loading="lazy"
@@ -2191,7 +2192,7 @@ function AlbumsTab({
                     {album.cover_storage_key ? (
                       <img
                         src={`/api/gallery/thumb/${album.cover_storage_key}?t=${encodeURIComponent(
-                          authToken(),
+                          mediaToken(),
                         )}`}
                         alt={album.name}
                         loading="lazy"
@@ -2282,7 +2283,7 @@ function AlbumPickerModal({
                       {a.cover_storage_key ? (
                         <img
                           src={`/api/gallery/thumb/${a.cover_storage_key}?t=${encodeURIComponent(
-                            authToken(),
+                            mediaToken(),
                           )}`}
                           alt=""
                           className="w-full h-full object-cover"

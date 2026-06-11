@@ -16,6 +16,7 @@ import {
   Menu,
   X,
 } from "lucide-react";
+import { mediaToken } from "@/lib/mediaToken";
 
 interface Props {
   slug: string;
@@ -39,8 +40,7 @@ function authHeaders() {
 }
 
 function fileUrl(slug: string): string {
-  const tok = typeof window !== "undefined" ? localStorage.getItem("auth_token") ?? "" : "";
-  return `/api/books/${encodeURIComponent(slug)}/file?t=${encodeURIComponent(tok)}`;
+  return `/api/books/${encodeURIComponent(slug)}/file?t=${encodeURIComponent(mediaToken())}`;
 }
 
 async function loadInitialState(

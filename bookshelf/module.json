@@ -1,6 +1,6 @@
 {
   "name": "bookshelf",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Shared bookshelf with EPUB / PDF / CBZ reader, per-user reading-position sync, and FS-driven catalogue scan. Uses poppler-utils for PDF covers.",
   "category": "media",
   "framework": {
@@ -42,7 +42,7 @@
   "requiresContract": {
     "library": "@/lib/auth",
     "exports": ["verifyToken", "verifyTokenLoose", "verifyAdmin"],
-    "description": "Asset routes (cover, file) use verifyTokenLoose so plain <img>/<embed>/<iframe> tags can pass ?t=<jwt> query auth. Requires authentication module >= 0.2.1."
+    "description": "Asset routes (cover, file) use verifyTokenLoose so plain <img>/<embed>/<iframe> tags can pass ?t= query auth with a media-scoped token. Client pages build asset URLs with mediaToken() from @/lib/mediaToken. Requires authentication module >= 0.3.0."
   },
   "postInstall": [
     "1. Install poppler-utils on the host (apt: poppler-utils; the pdftoppm binary must be on PATH)",

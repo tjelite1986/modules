@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { ArrowLeft, Flame, Loader2, MapPin, MapPinned } from "lucide-react";
+import { mediaToken } from "@/lib/mediaToken";
 
 const MapLeaflet = dynamic(() => import("./MapLeaflet"), {
   ssr: false,
@@ -124,7 +125,7 @@ export default function MapClient() {
             </div>
           </div>
         ) : (
-          <MapLeaflet items={items} authToken={authToken()} mode={mode} />
+          <MapLeaflet items={items} authToken={mediaToken()} mode={mode} />
         )}
       </div>
     </div>

@@ -4,6 +4,14 @@ All notable changes to the modules library are tracked here. Format loosely foll
 
 ## [Unreleased]
 
+## 2026-06-11
+
+### Changed
+
+- `authentication` (0.2.1 → **0.3.0**) — `?t=` query auth on asset routes now requires a short-lived (24 h) media-scoped capability token instead of the full session JWT. New `signMediaToken` server export, new `GET /api/auth/media-token` route, and new client helper `lib/mediaToken.ts` (`mediaToken` / `ensureMediaToken` / `clearMediaToken`, localStorage-cached with background refresh). `verifyTokenLoose` rejects session JWTs in query strings, regular header auth rejects media tokens, and media tokens inherit the parent session `jti` so logout revokes them. Closes the JWT-in-URL tradeoff documented in 0.2.1. Backported from [elite-hub commit `311efa2`](https://github.com/tjelite1986/elite-hub/commit/311efa2).
+- `bookshelf` (0.1.0 → **0.2.0**) — reader and listing pages build cover/file URLs with `mediaToken()` instead of embedding the session JWT. Requires `authentication >= 0.3.0`.
+- `photo-gallery` (0.1.0 → **0.2.0**) — all client components (timeline, albums, smart albums, map, trips, tags, year-in-review, bulk download) build thumb/preview/file URLs with `mediaToken()` instead of embedding the session JWT. Requires `authentication >= 0.3.0`.
+
 ## 2026-06-08
 
 ### Added

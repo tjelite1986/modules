@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { thumbUrl } from "../../GalleryClient";
 import type { GalleryItem, MediaKind } from "../../types";
+import { mediaToken } from "@/lib/mediaToken";
 
 interface YearReview {
   year: number;
@@ -181,7 +182,7 @@ export default function YearReviewClient({ year }: { year: number }) {
 
   const maxMonth = Math.max(...data.monthly.map((m) => m.count), 1);
   const cover = data.cover_storage_key
-    ? `/api/gallery/preview/${data.cover_storage_key}?t=${encodeURIComponent(authToken())}`
+    ? `/api/gallery/preview/${data.cover_storage_key}?t=${encodeURIComponent(mediaToken())}`
     : null;
 
   return (
