@@ -56,16 +56,22 @@ function authHeaders() {
   return { Authorization: `Bearer ${authToken()}` };
 }
 
+// The v param busts the browser's immutable cache when derived media is
+// regenerated (rotate, HEIF repair) — the storage key stays the same.
+function mediaVersion(item: GalleryItem) {
+  return item.media_version ? `&v=${item.media_version}` : "";
+}
+
 export function thumbUrl(item: GalleryItem) {
-  return `/api/gallery/thumb/${item.storage_key}?t=${encodeURIComponent(mediaToken())}`;
+  return `/api/gallery/thumb/${item.storage_key}?t=${encodeURIComponent(mediaToken())}${mediaVersion(item)}`;
 }
 
 export function previewUrl(item: GalleryItem) {
-  return `/api/gallery/preview/${item.storage_key}?t=${encodeURIComponent(mediaToken())}`;
+  return `/api/gallery/preview/${item.storage_key}?t=${encodeURIComponent(mediaToken())}${mediaVersion(item)}`;
 }
 
 export function originalUrl(item: GalleryItem) {
-  return `/api/gallery/file/${item.storage_key}?t=${encodeURIComponent(mediaToken())}`;
+  return `/api/gallery/file/${item.storage_key}?t=${encodeURIComponent(mediaToken())}${mediaVersion(item)}`;
 }
 
 function fileUrlForLightbox(item: GalleryItem, variant: "preview" | "file") {

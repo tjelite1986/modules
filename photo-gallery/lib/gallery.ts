@@ -50,6 +50,7 @@ export interface GalleryItem {
   longitude: number | null;
   location_name: string | null;
   rating: number;
+  media_version?: number;
   tag_count?: number;
 }
 
@@ -689,7 +690,8 @@ export async function rotateItem(
   const stat = fs.statSync(orig);
   const db = getDb();
   db.prepare(
-    "UPDATE gallery_items SET width = ?, height = ?, size_bytes = ? WHERE id = ? AND user_id = ?",
+    `UPDATE gallery_items SET width = ?, height = ?, size_bytes = ?,
+       media_version = media_version + 1 WHERE id = ? AND user_id = ?`,
   ).run(result.width ?? null, result.height ?? null, stat.size, id, userId);
   return getItem(userId, id);
 }
@@ -742,7 +744,8 @@ export async function repairHeifMedia(userId: number): Promise<{
       );
       db.prepare(
         `UPDATE gallery_items SET width = ?, height = ?,
-           thumbnail_ready = ?, preview_ready = ? WHERE id = ? AND user_id = ?`,
+           thumbnail_ready = ?, preview_ready = ?,
+           media_version = media_version + 1 WHERE id = ? AND user_id = ?`,
       ).run(
         probed.width ?? null,
         probed.height ?? null,

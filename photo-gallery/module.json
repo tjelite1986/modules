@@ -1,6 +1,6 @@
 {
   "name": "photo-gallery",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Google-Photos-style library: timeline, albums, smart albums, map view, auto-trip detection, year-in-review, tag browser, share links, EXIF + geotag, content-hash dedup",
   "category": "media",
   "framework": {

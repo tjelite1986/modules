@@ -82,6 +82,9 @@ ALTER TABLE gallery_items ADD COLUMN description TEXT;
 ALTER TABLE gallery_items ADD COLUMN latitude REAL;
 ALTER TABLE gallery_items ADD COLUMN longitude REAL;
 ALTER TABLE gallery_items ADD COLUMN location_name TEXT;
+-- Cache-busting version for derived media (thumb/preview); bumped on rotate
+-- and HEIF repair so immutable-cached URLs change.
+ALTER TABLE gallery_items ADD COLUMN media_version INTEGER NOT NULL DEFAULT 0;
 CREATE INDEX IF NOT EXISTS idx_gallery_items_geo ON gallery_items(latitude, longitude);
 CREATE TABLE IF NOT EXISTS gallery_trips (
   id INTEGER PRIMARY KEY AUTOINCREMENT,

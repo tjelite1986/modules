@@ -24,6 +24,7 @@ export interface GalleryItem {
   longitude: number | null;
   location_name: string | null;
   rating: number;
+  media_version?: number;
   tag_count?: number;
 }
 
