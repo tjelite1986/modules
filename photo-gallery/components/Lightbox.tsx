@@ -3,8 +3,10 @@
 import { Component, ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import {
   Bookmark,
+  Check,
   ChevronLeft,
   ChevronRight,
+  Copy,
   Download,
   FolderPlus,
   Info,
@@ -58,6 +60,23 @@ function formatDuration(ms: number | null) {
   return `${mm}:${String(ss).padStart(2, "0")}`;
 }
 
+function copyText(text: string): Promise<void> {
+  if (navigator.clipboard?.writeText) return navigator.clipboard.writeText(text);
+  // Fallback for non-secure contexts (e.g. plain-HTTP LAN access)
+  const ta = document.createElement("textarea");
+  ta.value = text;
+  ta.style.position = "fixed";
+  ta.style.opacity = "0";
+  document.body.appendChild(ta);
+  ta.select();
+  try {
+    document.execCommand("copy");
+  } finally {
+    document.body.removeChild(ta);
+  }
+  return Promise.resolve();
+}
+
 function InfoRow({
   label,
   value,
@@ -67,13 +86,44 @@ function InfoRow({
   value: string;
   mono?: boolean;
 }) {
+  const [copied, setCopied] = useState(false);
+  const resetTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (resetTimer.current) clearTimeout(resetTimer.current);
+    };
+  }, []);
+
+  async function onCopy() {
+    try {
+      await copyText(value);
+      setCopied(true);
+      if (resetTimer.current) clearTimeout(resetTimer.current);
+      resetTimer.current = setTimeout(() => setCopied(false), 1500);
+    } catch {}
+  }
+
   return (
     <div>
       <dt className="text-gray-400">{label}</dt>
       <dd
-        className={`mt-0.5 break-all ${mono ? "font-mono text-[11px]" : ""}`}
+        className={`mt-0.5 break-all flex items-start gap-1.5 ${mono ? "font-mono text-[11px]" : ""}`}
       >
-        {value}
+        <span className="min-w-0">{value}</span>
+        <button
+          type="button"
+          onClick={onCopy}
+          title={copied ? "Copied" : `Copy ${label.toLowerCase()}`}
+          aria-label={`Copy ${label.toLowerCase()}`}
+          className="flex-shrink-0 mt-px text-gray-600 hover:text-gray-200 transition-colors"
+        >
+          {copied ? (
+            <Check className="w-3.5 h-3.5 text-emerald-400" />
+          ) : (
+            <Copy className="w-3.5 h-3.5" />
+          )}
+        </button>
       </dd>
     </div>
   );
@@ -475,6 +525,7 @@ export default function Lightbox({
     return () => {
       cancelled = true;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- re-fetch tags only on item identity change, not on other item field updates
   }, [item?.id, tagsEnabled, authHeaders]);
 
   useEffect(() => {
@@ -519,6 +570,7 @@ export default function Lightbox({
     return () => {
       cancelled = true;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- EXIF/geocode re-runs only on the specific item fields listed, not the whole item object
   }, [showInfo, item?.id, item?.kind, item?.latitude, item?.longitude, item?.location_name, authHeaders]);
 
   const addTag = async () => {
