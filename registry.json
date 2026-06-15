@@ -546,7 +546,7 @@
       "description": "Floating privacy widget: CSS-blur images/videos/PII + tap-to-blur custom elements, then one-click PNG screenshot via html-to-image with full-page mode and MSE-video/broken-image fallbacks",
       "category": "ui",
       "tags": ["screenshot", "privacy", "blur", "html-to-image", "demo"],
-      "version": "0.1.0",
+      "version": "0.2.0",
       "status": "stable"
     }
   ]

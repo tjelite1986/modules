@@ -73,3 +73,16 @@ export default function DashboardShell({ children }) {
 - The screenshot widget is fixed at `bottom-3 right-3 z-[1100]` — adjust if it clashes with your layout
 - iOS Safari has stricter canvas-taint rules; the `proxy external images` pre-pass is what makes external images work there
 - Full-page mode briefly expands inner-scroll containers (`<main>` etc.) to their full height during capture. If your layout depends on a fixed-height scroller for sub-components, those may look off during the capture frame
+
+## Security (image-proxy route)
+
+The `/api/image-proxy` route makes outbound requests on the server's behalf, which makes it a Server-Side Request Forgery (SSRF) target. The route ships hardened, but **you must wire authentication** before exposing it:
+
+- **Auth required** — uncomment the `getSession()` block at the top of `GET` and wire it to your auth helper. Without it the route is an open proxy.
+- **Private/reserved ranges blocked** — every DNS-resolved address is checked against a `net.BlockList` of private/reserved IPv4 + IPv6 ranges (loopback, RFC1918, CGNAT, link-local, ULA, multicast, TEST-NET, NAT64, etc.).
+- **DNS-rebinding resistant** — the request connects directly to the validated IP via `node:http`/`https` (the socket never re-resolves the hostname); TLS still validates the real hostname via `servername`.
+- **Redirects rejected** — a `3xx` `Location` could point at a private host, so redirects are not followed.
+- **Opaque errors** — all upstream failures collapse to a generic `502`; details are logged server-side only.
+- **No wildcard CORS** — the route is fetched same-origin by the widget, so it sets a `private` cache and no `Access-Control-Allow-Origin`.
+
+If you don't need to capture cross-origin images, you can drop the route entirely.
