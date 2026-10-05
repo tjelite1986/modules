@@ -10,3 +10,6 @@ build/
 *.tsbuildinfo
 .vscode/
 .idea/
+
+# Local-only scratch area, never committed
+docs/
