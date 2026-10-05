@@ -50,7 +50,7 @@
 ### Media pitfalls
 - ffmpeg/ffprobe decode tiled HEIC/HEIF as one 512x512 tile without error. Convert with libheif (`heif-convert`) first and probe dimensions from the result (`photo-gallery`).
 - `Cache-Control: immutable` + regenerating a derivative at the same URL = stale forever. Version the URL (`media_version` bumped on regeneration, appended as `v=`).
-- `Readable.toWeb(fs.createReadStream(...))` throws an uncatchable `ERR_INVALID_STATE` when the client aborts (every seek / scroll-away). Several file routes here use it (`file-upload-storage`, `file-download-with-logging`, `asset-serving-with-auth`); prefer a hand-pumped `ReadableStream` that handles cancel and backpressure when touching them.
+- Never return `Readable.toWeb(...)` from a route: it throws an uncatchable `ERR_INVALID_STATE` when the client aborts (every seek / scroll-away). Modules that stream files ship their own `lib/nodeStream.ts` (`toWebStream(stream, req.signal)`); a new streaming module copies it rather than importing from another module.
 - A file extension or claimed MIME type is not evidence; sniff leading bytes before storing a download.
 
 ### SQLite in Next.js (applies to every DB-bearing module)

@@ -4,6 +4,10 @@ All notable changes to the modules library are tracked here. Format loosely foll
 
 ## [Unreleased]
 
+### Fixed
+
+- `file-upload-storage` (0.1.0 → **0.1.1**), `file-download-with-logging` (0.1.0 → **0.1.1**), `asset-serving-with-auth` (0.1.0 → **0.1.1**), `photo-gallery` (0.3.2 → **0.3.3**) — file and zip routes no longer return `Readable.toWeb(...)`. When the client aborted (a seek, a scroll-away, a cancelled download) the Node stream kept writing into the closed web controller and threw an uncatchable `ERR_INVALID_STATE`, one `uncaughtException` per abandoned response, and kept the file descriptor open. Each module now ships `lib/nodeStream.ts` (`toWebStream` / `fileStream`), which pumps the stream by hand, destroys the source on cancel or `request.signal` abort, and honours backpressure. Backported from elite-v2.
+
 ### Security
 
 - `privacy-screenshot` (0.1.0 → **0.2.0**) — hardened the `image-proxy` route against SSRF. The old version trusted string-prefix host checks (`"10."`, `"192.168."`), followed redirects, exposed wildcard CORS, and echoed upstream errors — and had no auth. Now: every DNS-resolved address is validated against a `net.BlockList` of private/reserved IPv4+IPv6 ranges; the request connects directly to the validated IP via `node:http`/`https` (no socket re-resolution) to defeat DNS rebinding while TLS still validates the hostname; redirects are rejected; upstream failures collapse to an opaque `502`; wildcard CORS is dropped for a `private` cache. A `getSession()` auth gate is documented at the top of `GET` (must be wired per-project, since modules are framework-agnostic). Hardened in elite-v2, backported here.

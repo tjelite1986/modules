@@ -4,7 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { isValidType, isValidSlug, assetsDir, findLogo, findBanner } from "@/lib/store";
 import path from "node:path";
 import fs from "node:fs";
-import { Readable } from "node:stream";
+import { toWebStream } from "@/lib/nodeStream";
 
 export const dynamic = "force-dynamic";
 
@@ -22,7 +22,7 @@ function contentTypeFor(file: string): string {
 }
 
 export async function GET(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: { type: string; slug: string; path: string[] } },
 ) {
   const session = await getServerSession(authOptions);
@@ -61,7 +61,7 @@ export async function GET(
 
   const stat = fs.statSync(filePath);
   const stream = fs.createReadStream(filePath);
-  const webStream = Readable.toWeb(stream) as unknown as ReadableStream;
+  const webStream = toWebStream(stream, req.signal);
   return new NextResponse(webStream, {
     headers: {
       "Content-Type": contentTypeFor(filePath),

@@ -18,6 +18,7 @@ Direct path access (must match `/^[A-Za-z0-9._-]+$/` per segment, must stay insi
 
 - **app-catalog-core** (uses `assetsDir`, `findLogo`, `findBanner`, `isValidType`, `isValidSlug`)
 - **auth-nextauth** (gates with `getServerSession(authOptions)`)
+- `lib/nodeStream.ts` (ships with this module) — abort-safe file streaming; copy to `src/lib/`
 
 ## Security
 

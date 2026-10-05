@@ -5,14 +5,14 @@ import { isValidType, isValidSlug, isValidFileName, appDir } from "@/lib/store";
 import { recordDownload } from "@/lib/downloads";
 import path from "node:path";
 import fs from "node:fs";
-import { Readable } from "node:stream";
+import { toWebStream } from "@/lib/nodeStream";
 
 export const dynamic = "force-dynamic";
 
 const SAFE_VERSION = /^[0-9][0-9A-Za-z._-]*$/;
 
 export async function GET(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: { type: string; slug: string; version: string; file: string } },
 ) {
   const session = await getServerSession(authOptions);
@@ -56,7 +56,7 @@ export async function GET(
     ext === ".zip" ? "application/zip" :
     "application/octet-stream";
 
-  const webStream = Readable.toWeb(stream) as unknown as ReadableStream;
+  const webStream = toWebStream(stream, req.signal);
   const fallbackName = decodedFile.replace(/[^A-Za-z0-9._-]+/g, "_");
   const encodedName = encodeURIComponent(decodedFile);
   return new NextResponse(webStream, {

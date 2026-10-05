@@ -34,7 +34,7 @@ See [module.json](./module.json) for the full file mapping. Quick summary:
 # Copy files
 cp -r api/* <your-app>/src/app/api/gallery/
 cp -r components/* <your-app>/src/app/gallery/
-cp lib/gallery.ts lib/galleryStorage.ts <your-app>/src/lib/
+cp lib/gallery.ts lib/galleryStorage.ts lib/nodeStream.ts <your-app>/src/lib/
 cp db/schema.sql <your-app>/db/migrations/021_gallery.sql
 
 # Install npm deps

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getUploadPath, getUploadsRoot } from '@/lib/uploadPaths';
 import path from 'path';
 import fs from 'fs';
-import { Readable } from 'stream';
+import { toWebStream } from '@/lib/nodeStream';
 
 const MIME: Record<string, string> = {
   jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png',
@@ -49,7 +49,7 @@ export async function GET(req: NextRequest, { params }: { params: { filename: st
       const start = m[1] ? parseInt(m[1], 10) : 0;
       const end = m[2] ? Math.min(parseInt(m[2], 10), fileSize - 1) : fileSize - 1;
       if (start <= end && start < fileSize) {
-        const partial = Readable.toWeb(fs.createReadStream(filepath, { start, end })) as ReadableStream;
+        const partial = toWebStream(fs.createReadStream(filepath, { start, end }), req.signal);
         return new NextResponse(partial, {
           status: 206,
           headers: {
@@ -64,7 +64,7 @@ export async function GET(req: NextRequest, { params }: { params: { filename: st
     }
   }
 
-  const stream = Readable.toWeb(fs.createReadStream(filepath)) as ReadableStream;
+  const stream = toWebStream(fs.createReadStream(filepath), req.signal);
   return new NextResponse(stream, {
     headers: {
       'Content-Type': mime,

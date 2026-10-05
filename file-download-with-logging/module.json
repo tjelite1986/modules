@@ -1,6 +1,6 @@
 {
   "name": "file-download-with-logging",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Authenticated download endpoint that streams catalog files and records every download in the DB. Path-traversal protection. Sets correct MIME types and RFC-5987 Content-Disposition for non-ASCII filenames.",
   "category": "data",
   "framework": { "next": ">=14" },
@@ -9,6 +9,7 @@
     "modules": ["app-catalog-core", "auth-nextauth"]
   },
   "files": [
+    { "from": "lib/nodeStream.ts", "to": "src/lib/nodeStream.ts" },
     { "from": "lib/downloads.ts", "to": "src/lib/downloads.ts" },
     { "from": "api/download/[type]/[slug]/[version]/[file]/route.ts", "to": "src/app/api/download/[type]/[slug]/[version]/[file]/route.ts" },
     { "from": "db/schema.sql", "to": "db/migrations/002_downloads.sql" }

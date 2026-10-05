@@ -1,6 +1,6 @@
 {
   "name": "file-upload-storage",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Generic file upload, storage, and serving. HTTP Range support for large videos. HEIC->JPEG conversion. Custom folders with thumbnails.",
   "category": "data",
   "framework": { "next": ">=14" },
@@ -12,6 +12,7 @@
     "modules": ["authentication"]
   },
   "files": [
+    { "from": "lib/nodeStream.ts", "to": "src/lib/nodeStream.ts" },
     { "from": "lib/uploadPaths.ts", "to": "src/lib/uploadPaths.ts" },
     { "from": "lib/heicConvert.js", "to": "src/lib/heicConvert.js" },
     { "from": "api/upload/route.ts", "to": "src/app/api/upload/route.ts" },

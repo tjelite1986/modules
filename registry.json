@@ -127,7 +127,7 @@
       "description": "Generic file upload and serving with HTTP Range, HEIC→JPEG conversion, custom folders, and thumbnails",
       "category": "data",
       "tags": ["upload", "storage", "heic", "video"],
-      "version": "0.1.0",
+      "version": "0.1.1",
       "status": "stable"
     },
     {
@@ -172,7 +172,7 @@
       "description": "Auth-gated endpoint serving logo/banner/screenshots/markdown from the catalog with path-traversal protection",
       "category": "data",
       "tags": ["assets", "static-files", "path-traversal"],
-      "version": "0.1.0",
+      "version": "0.1.1",
       "status": "stable"
     },
     {
@@ -226,7 +226,7 @@
       "description": "Authenticated download endpoint that streams catalog files and logs each download in the DB",
       "category": "data",
       "tags": ["download", "streaming", "logging"],
-      "version": "0.1.0",
+      "version": "0.1.1",
       "status": "stable"
     },
     {
@@ -384,7 +384,7 @@
       "description": "Google-Photos-style library: timeline, albums, smart albums, map view, auto-trip detection, year-in-review, tag browser, share links, EXIF + geotag, content-hash dedup",
       "category": "media",
       "tags": ["gallery", "photos", "albums", "exif", "geotag", "leaflet", "smart-albums"],
-      "version": "0.3.2",
+      "version": "0.3.3",
       "status": "stable"
     },
     {

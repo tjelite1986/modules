@@ -16,6 +16,7 @@ Authenticated download endpoint for catalog files. Streams from disk, sets corre
 
 - **app-catalog-core** (uses `appDir`, `isValidType`, `isValidSlug`, `isValidFileName`)
 - **auth-nextauth** (uses `getServerSession`)
+- `lib/nodeStream.ts` (ships with this module) — abort-safe file streaming; copy to `src/lib/`
 
 ## Logged columns
 

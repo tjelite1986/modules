@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import fs from "node:fs";
 import { Readable } from "node:stream";
+import { toWebStream } from "@/lib/nodeStream";
 import archiver from "archiver";
 import { verifyTokenLoose } from "@/lib/auth";
 import { getItem, getFilePath } from "@/lib/gallery";
@@ -50,9 +51,9 @@ export async function GET(req: NextRequest) {
 
   archive.finalize();
 
-  const stream = Readable.toWeb(archive as unknown as Readable);
+  const stream = toWebStream(archive as unknown as Readable, req.signal);
   const filename = `gallery-${new Date().toISOString().slice(0, 10)}.zip`;
-  return new Response(stream as ReadableStream, {
+  return new Response(stream, {
     status: 200,
     headers: {
       "Content-Type": "application/zip",

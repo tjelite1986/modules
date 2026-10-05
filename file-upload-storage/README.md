@@ -7,6 +7,7 @@ Generic file upload, storage, and serving for Next.js. Supports images, videos, 
 **Server lib:**
 - `lib/uploadPaths.ts` — `getUploadsRoot`, `getSubDir`, `getUploadPath`, `getAvatarsDir`, `getChannelAssetsDir`
 - `lib/heicConvert.js` — `convertHeicIfNeeded` (requires `heic-convert`)
+- `lib/nodeStream.ts` — `toWebStream` / `fileStream`: abort-safe replacement for `Readable.toWeb`
 
 **API:**
 - `POST /api/upload` — generic upload (auto-routes to photo/video/files/apk)
