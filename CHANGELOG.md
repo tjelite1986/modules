@@ -10,6 +10,7 @@ All notable changes to the modules library are tracked here. Format loosely foll
 
 ### Security
 
+- `privacy-screenshot` (0.2.0 → **0.2.1**) — the `image-proxy` route now pins to an IPv4 address when DNS returns both families. It took `resolved[0]`, which is often the AAAA record; inside a Docker bridge network with no IPv6 route that failed with `ENETUNREACH` and a `502` although the host was reachable over IPv4. URLs with an explicit port other than 80/443 are now rejected, so the proxy can't probe arbitrary services on public addresses. Backported from adflix.
 - `privacy-screenshot` (0.1.0 → **0.2.0**) — hardened the `image-proxy` route against SSRF. The old version trusted string-prefix host checks (`"10."`, `"192.168."`), followed redirects, exposed wildcard CORS, and echoed upstream errors — and had no auth. Now: every DNS-resolved address is validated against a `net.BlockList` of private/reserved IPv4+IPv6 ranges; the request connects directly to the validated IP via `node:http`/`https` (no socket re-resolution) to defeat DNS rebinding while TLS still validates the hostname; redirects are rejected; upstream failures collapse to an opaque `502`; wildcard CORS is dropped for a `private` cache. A `getSession()` auth gate is documented at the top of `GET` (must be wired per-project, since modules are framework-agnostic). Hardened in elite-v2, backported here.
 
 ## 2026-06-11
